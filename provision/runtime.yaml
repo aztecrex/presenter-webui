@@ -1,0 +1,97 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  OriginAccessIdentity:
+    Type: String
+    Default: origin-access-identity/cloudfront/E3DIS3913OEPXE
+    Description: >
+      An origin access identity. These cannot be created through
+      cloudformation so create one before you get here or, if you are me, use
+      this handy default.
+    MinLength: 1
+  OriginAccessPrincipal:
+    Type: String
+    Default: 1b4f36734d90d4b10a51e6ab9ff5542ed26706ca309e844f48f5e43764acec0bf20a8c12a2143c81aaecd7f5ac285f0c
+    Description: >
+      An origin access principal. These cannot be created through
+      cloudformation so create one before you get here or, if you are me, use
+      this handy default.
+    MinLength: 1
+  DNSZone:
+    Type: String
+    MinLength: 1
+  RelativeDomain:
+    Type: String
+    MinLength: 1
+    Default: present
+
+Resources:
+  Origin:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+
+  OriginAccessPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket:
+        Ref: "Origin"
+      PolicyDocument:
+        Statement:
+          - Action:
+              - "s3:GetObject"
+            Effect: "Allow"
+            Resource: !Sub arn:aws:s3:::${Origin}/*
+            Principal:
+              CanonicalUser:
+                Ref: OriginAccessPrincipal
+
+  CDNCertificate:
+    Type: "AWS::CertificateManager::Certificate"
+    Properties:
+      DomainName: !Sub ${RelativeDomain}.${DNSZone}
+      DomainValidationOptions:
+      - DomainName: !Sub ${RelativeDomain}.${DNSZone}
+        ValidationDomain: !Sub ${DNSZone}
+
+  CDN:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt [Origin, DomainName]
+            Id: contentOrigin
+            S3OriginConfig:
+              OriginAccessIdentity: !Ref OriginAccessIdentity
+        Enabled: 'true'
+        Comment: Distribute the presenter
+        DefaultRootObject: index.html
+        Aliases:
+          - !Sub ${RelativeDomain}.${DNSZone}
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CDNCertificate
+          SslSupportMethod: sni-only
+        DefaultCacheBehavior:
+          Compress: true
+          TargetOriginId: contentOrigin
+          ForwardedValues:
+            QueryString: 'false'
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: redirect-to-https
+
+
+  Domains:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: !Sub ${DNSZone}.
+      RecordSets:
+        - Name: !Sub ${RelativeDomain}.${DNSZone}.
+          Type: A
+          AliasTarget:
+            HostedZoneId: Z2FDTNDATAQYW2
+            DNSName: !GetAtt [CDN, DomainName]
+
+Outputs:
+  ContentStore:
+    Value: !Ref Origin
+  Link:
+    Value: !Sub http://${RelativeDomain}.${DNSZone}
