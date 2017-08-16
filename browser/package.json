@@ -1,7 +1,7 @@
 {
-  "name": "try-purescript-pux",
+  "name": "presenter-viewer",
   "version": "1.0.0",
-  "description": "try purescript pux",
+  "description": "Browser-based presentation viewer",
   "main": "index.js",
   "scripts": {
     "prep": "npm install && psc-package update",

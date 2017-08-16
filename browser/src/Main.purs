@@ -13,13 +13,13 @@ data Event = Next | Previous | Restart
 
 type State = Int
 
-initial :: State
-initial = 1
+initialState :: State
+initialState = 1
 
 foldp :: ∀ fx. Event -> State -> EffModel State Event fx
 foldp Next s = { state: s + 1, effects: [] }
 foldp Previous s  = { state: if s <= 1 then 1 else s - 1, effects: [] }
-foldp Restart s = { state: initial, effects: [] }
+foldp Restart s = { state: initialState, effects: [] }
 
 view :: State -> HTML Event
 view slide =
@@ -34,7 +34,7 @@ view slide =
 main :: ∀ fx. Eff (CoreEffects fx) Unit
 main = do
   app <- start
-    { initialState: initial
+    { initialState
     , view
     , foldp
     , inputs: []
