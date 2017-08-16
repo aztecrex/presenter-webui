@@ -26,9 +26,9 @@ view slide =
   div do
     div $ text $ "Slide " <> (show slide)
     br
-    button #! onClick (const $ Previous) $ text "Previous"
-    button #! onClick (const $ Next) $ text "Next"
-    button #! onClick (const $ Restart) $ text "Restart"
+    button #! onClick (const Previous) $ text "Previous"
+    button #! onClick (const Next) $ text "Next"
+    button #! onClick (const Restart) $ text "Restart"
 
 
 main :: ∀ fx. Eff (CoreEffects fx) Unit
