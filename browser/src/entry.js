@@ -1,3 +1,7 @@
+
+// all of the static assets
+require.context("./public/", true)
+
 let ClientEntry = require('./Main.purs');
 let app = ClientEntry.main(window.location.pathname)(window.__puxLastState || ClientEntry.initialState)()
 

@@ -79,6 +79,9 @@ module.exports = {
             'es2015'
           ]
         }
+      },
+      { test: /favicon.ico$/,
+        loader: "file-loader?name=[path][name].[ext]&context=./src/public"
       }
     ]
   },
