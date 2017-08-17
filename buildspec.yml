@@ -5,10 +5,12 @@ phases:
     commands:
       - echo "pre build"
       - chmod +x *.sh
+      - curl https://github.com/purescript/psc-package/releases/download/v0.1.2/macos.tar.gz -L | tar xz
+
   build:
     commands:
       - echo "build"
-      - npm run prep
-      - npm run build
+      - PATH="$PATH:$(pwd)/psc-package" npm run prep
+      - PATH="$PATH:$(pwd)/psc-package" npm run build
       - echo "publish"
       - ./publish.sh
