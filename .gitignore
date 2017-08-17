@@ -9,3 +9,5 @@ output
 npm-debug.log
 
 bundle.js
+secrets.deploy
+

@@ -1,0 +1,14 @@
+version: 0.1
+
+phases:
+  pre_build:
+    commands:
+      - echo "pre build"
+      - chmod +x *.sh
+  build:
+    commands:
+      - echo "build"
+      - npm run prep
+      - npm run build
+      - echo "publish"
+      - ./publish.sh

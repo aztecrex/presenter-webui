@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  ArtifactStore:
+    Type: String
+  PipelineRole:
+    Type: String
+  BuildRole:
+    Type: String
+  GithubUser:
+    Type: String
+    NoEcho: true
+  GithubToken:
+    Type: String
+    NoEcho: true
+  GithubRepo:
+    Type: String
+
+Mappings:
+  Global:
+    Symbol:
+      SourceArtifact: PresenterWebUISource
+      DeployableArtifact: PresenterDeployable
+
+Resources:
+
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      ArtifactStore:
+        Location: !Ref ArtifactStore
+        Type: S3
+      RoleArn: !Ref PipelineRole
+      RestartExecutionOnUpdate: false
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Source
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: 1
+                Provider: GitHub
+              OutputArtifacts:
+                - Name: !FindInMap [ Global, Symbol, SourceArtifact ]
+              Configuration:
+                Owner: !Ref GithubUser
+                Repo: !Ref GithubRepo
+                OAuthToken: !Ref GithubToken
+                Branch: master
+              RunOrder: 1
+        - Name: Build
+          Actions:
+            - Name: Build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref Builder
+              InputArtifacts:
+                - Name: !FindInMap [ Global, Symbol, SourceArtifact ]
+              OutputArtifacts:
+                - Name: !FindInMap [ Global, Symbol, DeployableArtifact ]
+              RunOrder: 1
+
+  Builder:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Location: !Ref ArtifactStore
+        Type: S3
+      Source:
+        Location: !Sub ${ArtifactStore}/source.zip
+        Type: S3
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/nodejs:7.0.0
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: AWS_DEFAULT_REGION
+            Value: !Ref AWS::Region
+          - Name: CI
+            Value: "true"
+      Name: !Ref AWS::StackName
+      ServiceRole: !Ref BuildRole
