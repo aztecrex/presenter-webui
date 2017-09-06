@@ -1,19 +1,23 @@
 version: 0.2
 
-env:
-  variables:
-    key: "value"
-
 phases:
+
   install:
     commands:
       - curl https://github.com/purescript/psc-package/releases/download/v0.2.3/linux64.tar.gz -L | tar xz
       - PATH="$PATH:$(pwd)/psc-package"
+
   pre_build:
     commands:
       - chmod +x *.sh
       - npm run prep
+
   build:
     commands:
       - npm run build
       - ./publish.sh
+
+artifacts:
+
+  files:
+    - build/**
