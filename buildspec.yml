@@ -8,7 +8,7 @@ phases:
   install:
     commands:
       - echo "install"
-      - curl https://github.com/purescript/psc-package/releases/download/v0.1.2/macos.tar.gz -L | tar xz
+      - curl https://github.com/purescript/psc-package/releases/download/v0.2.3/linux64.tar.gz -L | tar xz
       - pwd
       - find . -type f
       - PATH="$PATH:$(pwd)/psc-package"
