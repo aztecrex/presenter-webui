@@ -4,7 +4,7 @@
   "description": "Browser-based presentation viewer",
   "main": "index.js",
   "scripts": {
-    "prep": "npm install && psc-package update",
+    "prep": "npm install --silent && psc-package update",
     "build": "webpack --progress -p --display-error-details",
     "start": "webpack-dev-server --open --hot --inline",
     "test": "echo \"Error: no test specified\" && exit 1"
