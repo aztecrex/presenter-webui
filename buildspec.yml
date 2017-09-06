@@ -11,18 +11,19 @@ phases:
       - curl https://github.com/purescript/psc-package/releases/download/v0.1.2/macos.tar.gz -L | tar xz
       - pwd
       - find . -type f
+      - PATH="$PATH:$(pwd)/psc-package"
   pre_build:
     commands:
       - echo "pre build"
       - chmod +x *.sh
+      - echo "after $PATH"
+      - which psc-package
+#      - npm run prep
+      - npm install
+      - psc-package update
   build:
     commands:
       - echo "build"
-      - echo "before $PATH"
-      - PATH="$PATH:$(pwd)/psc-package"
-      - echo "after $PATH"
-      - which psc-package
-      - npm run prep
       - npm run build
       - echo "publish"
       - ./publish.sh
