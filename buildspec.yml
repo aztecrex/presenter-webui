@@ -15,6 +15,9 @@ phases:
   build:
     commands:
       - npm run build
+
+  post-build:
+    commands:
       - ./publish.sh
 
 artifacts:
