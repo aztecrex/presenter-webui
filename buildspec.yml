@@ -16,7 +16,7 @@ phases:
     commands:
       - npm run build
 
-  post-build:
+  post_build:
     commands:
       - ./publish.sh
 
