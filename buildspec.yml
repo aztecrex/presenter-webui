@@ -22,7 +22,7 @@ phases:
       - PATH="$PATH:$(pwd)/psc-package"
       - echo "after $PATH"
       - which psc-package
-      - PATH="$PATH:$(pwd)/psc-package" npm run prep
-      - PATH="$PATH:$(pwd)/psc-package" npm run build
+      - npm run prep
+      - npm run build
       - echo "publish"
       - ./publish.sh
