@@ -7,7 +7,7 @@
     "prep": "npm install --silent && psc-package update",
     "build": "webpack --progress -p --display-error-details",
     "start": "webpack-dev-server --open --hot --inline",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "psc-package build && ./test/testEntry.js"
   },
   "repository": {
     "type": "git",

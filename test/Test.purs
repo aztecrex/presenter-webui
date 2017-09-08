@@ -1,15 +1,19 @@
 module Test.Main where
 
 import Prelude
-
-import Test.Unit (suite, test, timeout)
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Console (CONSOLE)
+import Control.Monad.Aff.AVar (AVAR)
+import Test.Unit (suite, test)
+import Test.Unit.Console (TESTOUTPUT)
 import Test.Unit.Main (runTest)
 import Test.Unit.Assert as Assert
 
-import Node.FS.Aff as FS
-import Node.Encoding (Encoding(..))
-
-
+main :: ∀ fx. Eff ( console :: CONSOLE
+                  , testOutput :: TESTOUTPUT
+                  , avar :: AVAR
+                  | fx
+          ) Unit
 main = runTest do
   suite "sync code" do
     test "arithmetic" do
