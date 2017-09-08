@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "prep": "npm install --silent && psc-package update",
-    "build": "webpack --progress -p --display-error-details",
+    "build": "rm -rf build && webpack --progress -p --display-error-details",
     "start": "webpack-dev-server --open --hot --inline",
-    "test": "psc-package build && ./test/testEntry.js"
+    "test": "psc-package build && ./src/testEntry.js"
   },
   "repository": {
     "type": "git",
