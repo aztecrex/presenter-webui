@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
-require("../output/bundle")["Test.Main"].main();
+require("../output/Test.Main").main();
 

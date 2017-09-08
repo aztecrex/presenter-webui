@@ -61,8 +61,7 @@ module.exports = {
             options: {
               pscPackage: true,
               src: [
-                path.join('src', '**', '*.purs'),
-                path.join('test', '**', '*.purs')
+                path.join('src', '**', '*.purs')
               ],
               bundle: !(isWebpackDevServer || isWatch),
               watch: isWebpackDevServer || isWatch,
