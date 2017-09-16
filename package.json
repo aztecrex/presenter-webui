@@ -14,8 +14,8 @@
     "type": "git",
     "url": "git+https://github.com/aztecrex/presenter-webui"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Greg Wiley <aztex.rex@jammm.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/aztecrex/presenter-webui/issues"
   },
