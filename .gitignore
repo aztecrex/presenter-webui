@@ -1,4 +1,7 @@
 .psc-ide-port
+
+
+.psc-package
 .psci_modules
 build
 node_modules
@@ -8,11 +11,3 @@ npm-debug.log
 bundle.js
 secrets.deploy
 
-/bower_components/
-/node_modules/
-/.pulp-cache/
-/output/
-/generated-docs/
-/.psc*
-/.purs*
-/.psa*

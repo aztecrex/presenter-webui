@@ -59,10 +59,9 @@ module.exports = {
           {
             loader: 'purs-loader',
             options: {
-              pscPackage: false,
+              pscPackage: true,
               src: [
-                path.join('src', '**', '*.purs'),
-                path.join('bower_components', 'purescript-*', 'src', '**', '*.purs'),
+                path.join('src', '**', '*.purs')
               ],
               bundle: !(isWebpackDevServer || isWatch),
               watch: isWebpackDevServer || isWatch,
@@ -88,7 +87,7 @@ module.exports = {
   },
 
   resolve: {
-    modules: [ 'node_modules' ],
+    modules: [ 'node_modules', '.psc-package' ],
     extensions: [ '.purs', '.js']
   },
 
