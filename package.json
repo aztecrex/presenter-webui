@@ -4,7 +4,8 @@
   "description": "Browser-based presentation viewer",
   "main": "index.js",
   "scripts": {
-    "prep": "npm install --silent && bower install",
+    "fixup": "rm -f bower_components/purescript-pux/.babelrc",
+    "prep": "npm install --silent && bower install && npm run fixup",
     "build": "rm -rf build && webpack --progress -p --display-error-details",
     "start": "webpack-dev-server --open --hot --inline",
     "test": "pulp test --test-path src"
