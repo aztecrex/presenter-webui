@@ -6,7 +6,7 @@
   "scripts": {
     "fixup": "rm -f bower_components/purescript-pux/.babelrc",
     "prep": "npm install --silent && bower --allow-root install && npm run fixup",
-    "build": "rm -rf build && webpack --progress -p --display-error-details",
+    "build": "npm test && rm -rf build && webpack --progress -p --display-error-details",
     "start": "webpack-dev-server --open --hot --inline",
     "test": "pulp test --test-path src"
   },
