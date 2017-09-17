@@ -157,10 +157,10 @@ tests = do
                              text ptext4
             check source expected
         test "convert link reference" do
-            let linkText = "destination"
-            let hrefValue = "https://gregwiley.com"
-            let source = SlamDown $ singleton $ LinkReference linkText hrefValue
-            let expected = div $ a ! href hrefValue $ text linkText
+            let label = "destination"
+            let dest = "https://gregwiley.com"
+            let source = SlamDown $ singleton $ LinkReference label dest
+            let expected = div $ a ! href dest $ text label
             check source expected
 
 check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)

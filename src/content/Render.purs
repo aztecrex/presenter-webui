@@ -21,7 +21,7 @@ renderBlock (Lst (Ordered _) items) = ol $ traverse_ (traverse_ paragraphToLine)
 renderBlock (Lst (Bullet _) items) = ul $ traverse_ (traverse_ paragraphToLine) items
 renderBlock (Blockquote blocks) = blockquote $ traverse_ renderBlock blocks
 renderBlock (Header level spans) = parent ("h" <> show level) $ traverse_ renderInline spans
-renderBlock (LinkReference txt url) = a ! href url $ text txt
+renderBlock (LinkReference label dest) = a ! href dest $ text label
 renderBlock _ = p (text "Block conversion not implemented.")
 
 renderInline :: forall a. Inline ~> Markup
