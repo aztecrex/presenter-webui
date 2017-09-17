@@ -1,4 +1,4 @@
-module Content.Slide where
+module Content.Slide (slides) where
 
 import Prelude (map, class Eq, class Ord, (==), otherwise, ($))
 import Data.Foldable (foldr)
