@@ -169,9 +169,13 @@ tests = do
             let expected = text ptext
             checkInline source expected
         test "convert space" do
-            let ptext = "such text!"
             let source = Space
             let expected = text " "
+            checkInline source expected
+        test "convert code" do
+            let ptext = "such code!"
+            let source = Code false ptext
+            let expected = code $ text ptext
             checkInline source expected
 
 check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)
