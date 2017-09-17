@@ -3,7 +3,7 @@ module Content.Render.Test (tests) where
 import Prelude (Unit, ($), (==), (<>), (<<<), discard)
 import Data.List (singleton, (:), List(..))
 import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..))
-import Text.Smolder.HTML (div, p, pre, code, ol, ul, li)
+import Text.Smolder.HTML (div, p, pre, code, ol, ul, li, blockquote)
 import Text.Smolder.HTML.Attributes (className)
 import Text.Smolder.Markup (text, Markup, (!))
 import Text.Smolder.Renderer.String as MR
@@ -124,6 +124,14 @@ tests = do
                   li $ text itext2
                   li $ text itext3
           check source expected
+        test "convert block quote" do
+            let ptext1 = "such text!"
+            let ptext2 = "such more text!"
+            let source = SlamDown $ singleton $ Blockquote (para ptext1 : para ptext2 : Nil)
+            let expected = div $ blockquote $ do
+                             p $ text ptext1
+                             p $ text ptext2
+            check source expected
 
 check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)
 check source expected = do
