@@ -1,12 +1,12 @@
 module Content.Render (render) where
 
-import Prelude ((<>), type (~>), ($))
+import Prelude ((<>), type (~>), ($), show)
 import Data.List(List(..), (:))
 import Data.Traversable(traverse_)
 import Data.Foldable(intercalate)
 import Text.Markdown.SlamDown(SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..))
-import Text.Smolder.Markup (Markup, MarkupM(..), text, (!))
-import Text.Smolder.HTML (hr, p, div, code, pre, ol, ul, li, blockquote, h1)
+import Text.Smolder.Markup (Markup, MarkupM(..), text, (!), parent)
+import Text.Smolder.HTML (hr, p, div, code, pre, ol, ul, li, blockquote)
 import Text.Smolder.HTML.Attributes (className)
 
 render :: forall a. SlamDownP ~> Markup
@@ -20,7 +20,7 @@ renderBlock (CodeBlock Indented lines) = pre $ code $ text $ intercalate "\n" li
 renderBlock (Lst (Ordered _) items) = ol $ traverse_ (traverse_ paragraphToLine) items
 renderBlock (Lst (Bullet _) items) = ul $ traverse_ (traverse_ paragraphToLine) items
 renderBlock (Blockquote blocks) = blockquote $ traverse_ renderBlock blocks
-renderBlock (Header _ spans) = h1 $ traverse_ renderInline spans
+renderBlock (Header level spans) = parent ("h" <> show level) $ traverse_ renderInline spans
 renderBlock _ = p (text "Block conversion not implemented.")
 
 renderInline :: forall a. Inline ~> Markup

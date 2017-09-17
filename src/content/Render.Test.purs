@@ -3,7 +3,7 @@ module Content.Render.Test (tests) where
 import Prelude (Unit, ($), (==), (<>), (<<<), discard, map)
 import Data.List (singleton, (:), List(..))
 import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..))
-import Text.Smolder.HTML (div, p, pre, code, ol, ul, li, blockquote, h1)
+import Text.Smolder.HTML (div, p, pre, code, ol, ul, li, blockquote, h1, h3)
 import Text.Smolder.HTML.Attributes (className)
 import Text.Smolder.Markup (text, Markup, (!))
 import Text.Smolder.Renderer.String as MR
@@ -139,6 +139,18 @@ tests = do
             let ptext4 = "!"
             let source = SlamDown $ singleton $ Header 1 $ map Str (ptext1 : ptext2 : ptext3 : ptext4 : Nil)
             let expected = div $ h1 $ do
+                             text ptext1
+                             text ptext2
+                             text ptext3
+                             text ptext4
+            check source expected
+        test "convert header level" do
+            let ptext1 = "Such"
+            let ptext2 = " "
+            let ptext3 = "Header"
+            let ptext4 = "!"
+            let source = SlamDown $ singleton $ Header 3 $ map Str (ptext1 : ptext2 : ptext3 : ptext4 : Nil)
+            let expected = div $ h3 $ do
                              text ptext1
                              text ptext2
                              text ptext3
