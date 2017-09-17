@@ -32,6 +32,7 @@ renderInline (Strong spans) = strong $ traverse_ renderInline spans
 renderInline (Emph spans) = em $ traverse_ renderInline spans
 renderInline SoftBreak = text "\n"
 renderInline LineBreak = br
+renderInline (Entity txt) = text txt
 renderInline _ = text "Inline conversion not implemented."
 
 paragraphToLine :: forall a. Block ~> Markup

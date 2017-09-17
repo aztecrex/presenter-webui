@@ -1,14 +1,16 @@
 module Content.Render.Test (tests) where
 
 import Prelude (Unit, ($), (==), (<>), (<<<), discard, map)
+import Data.Either(Either)
 import Data.List (singleton, (:), List(..))
+import Text.Markdown.SlamDown.Parser(parseMd)
 import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..))
 import Text.Smolder.HTML (div, p, pre, code, ol, ul, li, blockquote, h1, h3, a, strong, em, br)
 import Text.Smolder.HTML.Attributes (className, href)
 import Text.Smolder.Markup (text, Markup, (!))
 import Text.Smolder.Renderer.String as MR
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE)
+import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Aff.AVar (AVAR)
 import Test.Unit (suite, test, Test)
 import Test.Unit.Console (TESTOUTPUT)
@@ -31,12 +33,16 @@ singletonMd = SlamDown <<< singleton
 paragraphMd :: forall a. String -> SlamDownP a
 paragraphMd = singletonMd <<< blockp
 
+parsed :: Either String SlamDown
+parsed = parseMd "this is true: 7 &lt; 100 & 7 < 12"
+
 tests :: ∀ fx. Eff ( console :: CONSOLE
                   , testOutput :: TESTOUTPUT
                   , avar :: AVAR
                   | fx
           ) Unit
 tests = do
+  logShow $ parsed
   runTest do
     suite "Content.Render block elements" do
         test "convert paragraph" do
@@ -200,6 +206,11 @@ tests = do
         test "convert line break" do
             let source = LineBreak
             let expected = br
+            checkInline source expected
+        test "convert entity (not what I really want to do but predicatable)" do
+            let etext = "&nbsp;"
+            let source = Entity etext
+            let expected = text etext
             checkInline source expected
 
 check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)
