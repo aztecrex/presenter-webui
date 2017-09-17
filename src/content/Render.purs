@@ -3,11 +3,11 @@ module Content.Render (render) where
 import Prelude ((<>), type (~>), ($), show)
 import Data.List(List(..), (:))
 import Data.Traversable(traverse_)
-import Data.Foldable(intercalate)
+import Data.Foldable(intercalate, foldMap)
 import Text.Markdown.SlamDown(SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..), LinkTarget(..))
 import Text.Smolder.Markup (Markup, MarkupM(..), text, (!), parent)
-import Text.Smolder.HTML (hr, p, div, code, pre, ol, ul, li, blockquote, a, strong, em, br)
-import Text.Smolder.HTML.Attributes (className, href)
+import Text.Smolder.HTML (hr, p, div, code, pre, ol, ul, li, blockquote, a, strong, em, br, img)
+import Text.Smolder.HTML.Attributes (className, href, src, alt)
 
 render :: forall a. SlamDownP ~> Markup
 render (SlamDown blocks) = div $ traverse_ renderBlock blocks
@@ -34,7 +34,13 @@ renderInline SoftBreak = text "\n"
 renderInline LineBreak = br
 renderInline (Entity txt) = text txt
 renderInline (Link spans (InlineLink dest)) = a ! href dest $ traverse_ renderInline spans
+renderInline (Image spans dest) = img ! src dest ! alt (foldMap stringPart spans)
 renderInline _ = text "Inline conversion not implemented."
+
+stringPart :: forall a. Inline a -> String
+stringPart (Str txt) = txt
+stringPart Space = " "
+stringPart _ = ""
 
 paragraphToLine :: forall a. Block ~> Markup
 paragraphToLine (Paragraph spans) = li $ traverse_ renderInline spans

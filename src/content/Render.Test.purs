@@ -5,8 +5,8 @@ import Data.Either(Either)
 import Data.List (singleton, (:), List(..))
 import Text.Markdown.SlamDown.Parser(parseMd)
 import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..), LinkTarget(..))
-import Text.Smolder.HTML (div, p, pre, code, ol, ul, li, blockquote, h1, h3, a, strong, em, br)
-import Text.Smolder.HTML.Attributes (className, href)
+import Text.Smolder.HTML (div, p, pre, code, ol, ul, li, blockquote, h1, h3, a, strong, em, br, img)
+import Text.Smolder.HTML.Attributes (className, href, src, alt)
 import Text.Smolder.Markup (text, Markup, (!))
 import Text.Smolder.Renderer.String as MR
 import Control.Monad.Eff (Eff)
@@ -212,7 +212,7 @@ tests = do
             let source = Entity etext
             let expected = text etext
             checkInline source expected
-        test "convert link" do
+        test "convert link (inline only, reference not implemented)" do
             let ltext1 = "such "
             let ltext2 = "text!"
             let dest = "https://gjwiley.com"
@@ -220,6 +220,13 @@ tests = do
             let expected = a ! href dest $ do
                   text ltext1
                   text ltext2
+            checkInline source expected
+        test "convert image" do
+            let ltext1 = "such "
+            let ltext2 = "text!"
+            let loc = "https://gjwiley.com/images/fishbicycle.png"
+            let source = Image (Str ltext1 : Space : Str ltext2 : Nil) loc
+            let expected = img ! src loc ! alt (ltext1 <> " " <> ltext2)
             checkInline source expected
 
 check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)
