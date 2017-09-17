@@ -1,6 +1,6 @@
 module Content.Slide.Test (tests) where
 
-import Prelude (Unit, ($), (==), pure, (<<<), (<>))
+import Prelude (Unit, ($), (==), pure, (<<<), (<>), discard)
 import Data.List (List(..), (:))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
@@ -41,4 +41,8 @@ tests = do
         test "break into slides" do
             let actual = slides $ SlamDown ( p1 : Rule : p2 : p3 : Rule : p1 : Rule : Rule : p2 : Nil) :: SlamDown
             let expected = slam p1 : (slam p2 <> slam p3) : slam p1 : blank : slam p2 : Nil
+            assert "break at rules" $ actual == expected
+        test "start and end with rules" do
+            let actual = slides $ SlamDown ( Rule : p2 : p3 : Rule : Nil) :: SlamDown
+            let expected = blank : (slam p2 <> slam p3) : blank : Nil
             assert "break at rules" $ actual == expected
