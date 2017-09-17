@@ -3,7 +3,7 @@ module Content.Render.Test (tests) where
 import Prelude (Unit, ($), (==), (<>), (<<<), discard)
 import Data.List (singleton, (:), List(..))
 import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..))
-import Text.Smolder.HTML (div, p, pre, code, ol, li)
+import Text.Smolder.HTML (div, p, pre, code, ol, ul, li)
 import Text.Smolder.HTML.Attributes (className)
 import Text.Smolder.Markup (text, Markup, (!))
 import Text.Smolder.Renderer.String as MR
@@ -101,9 +101,24 @@ tests = do
           let codetext = "int x = 3.302"
           let items1 = blockp itext1 : CodeBlock Indented (singleton codetext) : Nil
           let items2 = blockp itext2 : blockp itext3 : Nil
-          let source = SlamDown $ singleton $ Lst (Ordered "*") (items1 : items2 : Nil)
+          let source = SlamDown $ singleton $ Lst (Ordered "1.") (items1 : items2 : Nil)
           let expected = div $ do
                 ol $ do
+                  li $ text itext1
+                  pre $ code $ text codetext
+                  li $ text itext2
+                  li $ text itext3
+          check source expected
+        test "convert unordered list" do
+          let itext1 = "line 1"
+          let itext2 = "line 2"
+          let itext3 = "line 3"
+          let codetext = "int x = 3.302"
+          let items1 = blockp itext1 : CodeBlock Indented (singleton codetext) : Nil
+          let items2 = blockp itext2 : blockp itext3 : Nil
+          let source = SlamDown $ singleton $ Lst (Bullet "*") (items1 : items2 : Nil)
+          let expected = div $ do
+                ul $ do
                   li $ text itext1
                   pre $ code $ text codetext
                   li $ text itext2

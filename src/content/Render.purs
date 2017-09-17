@@ -4,9 +4,9 @@ import Prelude ((<>), type (~>), ($))
 import Data.List(List(..), (:))
 import Data.Traversable(traverse_)
 import Data.Foldable(intercalate)
-import Text.Markdown.SlamDown(SlamDownP(..), Block(..), Inline(..), CodeBlockType(..))
+import Text.Markdown.SlamDown(SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..))
 import Text.Smolder.Markup (Markup, MarkupM(..), text, (!))
-import Text.Smolder.HTML (hr, p, div, code, pre, ol, li)
+import Text.Smolder.HTML (hr, p, div, code, pre, ol, ul, li)
 import Text.Smolder.HTML.Attributes (className)
 
 render :: forall a. SlamDownP ~> Markup
@@ -17,7 +17,8 @@ renderBlock (Paragraph spans) = p $ traverse_ renderInline spans
 renderBlock (CodeBlock (Fenced _ "") lines) = pre $ code $ text $ intercalate "\n" lines
 renderBlock (CodeBlock (Fenced _ language) lines) = pre $ code ! className ("language-" <> language) $ text $ intercalate "\n" lines
 renderBlock (CodeBlock Indented lines) = pre $ code $ text $ intercalate "\n" lines
-renderBlock (Lst _ items) = ol $ traverse_ (traverse_ paragraphToLine) items
+renderBlock (Lst (Ordered _) items) = ol $ traverse_ (traverse_ paragraphToLine) items
+renderBlock (Lst (Bullet _) items) = ul $ traverse_ (traverse_ paragraphToLine) items
 renderBlock _ = p (text "Block conversion not implemented.")
 
 renderInline :: forall a. Inline ~> Markup
