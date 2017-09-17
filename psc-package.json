@@ -1,12 +1,13 @@
 {
     "name": "presenter-viewer",
-    "set": "psc-0.11.6-prime",
-    "source": "https://github.com/purescript/package-sets.git",
+    "set": "master",
+    "source": "https://github.com/aztecrex/package-sets.git",
     "depends": [
         "test-unit",
         "pux",
         "psci-support",
         "prelude",
-        "eff"
+        "eff",
+        "markdown"
     ]
 }
