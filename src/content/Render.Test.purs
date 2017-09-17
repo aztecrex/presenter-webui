@@ -3,7 +3,7 @@ module Content.Render.Test (tests) where
 import Prelude (Unit, ($), (==), (<>), (<<<), discard, map)
 import Data.List (singleton, (:), List(..))
 import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..))
-import Text.Smolder.HTML (div, p, pre, code, ol, ul, li, blockquote, h1, h3, a, strong, em)
+import Text.Smolder.HTML (div, p, pre, code, ol, ul, li, blockquote, h1, h3, a, strong, em, br)
 import Text.Smolder.HTML.Attributes (className, href)
 import Text.Smolder.Markup (text, Markup, (!))
 import Text.Smolder.Renderer.String as MR
@@ -192,6 +192,14 @@ tests = do
             let expected = em $ do
                   text ptext1
                   text ptext2
+            checkInline source expected
+        test "convert soft break" do
+            let source = SoftBreak
+            let expected = text "\n"
+            checkInline source expected
+        test "convert line break" do
+            let source = LineBreak
+            let expected = br
             checkInline source expected
 
 check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)
