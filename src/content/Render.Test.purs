@@ -1,13 +1,29 @@
 module Content.Render.Test (tests) where
 
-import Prelude (Unit)
+import Prelude (Unit, ($), (==), (<<<))
+import Data.List (singleton)
+import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..))
+import Text.Smolder.HTML (div, p)
+import Text.Smolder.Markup (text, Markup)
+import Text.Smolder.Renderer.String as MR
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Aff.AVar (AVAR)
-import Test.Unit (suite, test)
+import Test.Unit (suite, test, Test)
 import Test.Unit.Console (TESTOUTPUT)
 import Test.Unit.Main (runTest)
-import Test.Unit.Assert (assert)
+import Test.Unit.Assert (assert, equal)
+
+import Content.Render (render)
+
+blockp :: forall a. String -> Block a
+blockp txt = Paragraph $ singleton $ Str txt
+
+singletonMd :: forall a. Block a -> SlamDownP a
+singletonMd = SlamDown <<< singleton
+
+paragraphMd :: forall a. String -> SlamDownP a
+paragraphMd = singletonMd <<< blockp
 
 tests :: ∀ fx. Eff ( console :: CONSOLE
                   , testOutput :: TESTOUTPUT
@@ -17,5 +33,15 @@ tests :: ∀ fx. Eff ( console :: CONSOLE
 tests = do
   runTest do
     suite "Content.Render" do
-        test "placeholder" do
-            assert "no tests yet" true
+        test "convert paragraph" do
+            let ptext = "such text!"
+            let source = paragraphMd ptext
+            let expected = div $ do
+                             p $ text ptext
+            check source expected
+
+
+check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)
+check source expected = do
+    let actual = render source
+    equal (MR.render expected) (MR.render actual)
