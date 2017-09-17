@@ -47,6 +47,17 @@ tests = do
                              p $ text ptext1
                              p $ text ptext2
             check source expected
+        test "convert multiple text" do
+            let ptext1 = "such text!"
+            let ptext2 = "such more text!"
+            let ptext3 = "with addition"
+            let source = SlamDown (blockp ptext1 : Paragraph  (Str ptext2 : Str ptext3 : Nil) : Nil)
+            let expected = div $ do
+                  p $ text ptext1
+                  p $ do
+                    text ptext2
+                    text ptext3
+            check source expected
 
 
 check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)

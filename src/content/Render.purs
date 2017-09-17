@@ -11,5 +11,9 @@ render :: forall a. SlamDownP ~> Markup
 render (SlamDown blocks) = div $ traverse_ renderBlock blocks
 
 renderBlock :: forall a. Block ~> Markup
-renderBlock (Paragraph (Str txt : Nil)) = p (text txt)
-renderBlock _ = p (text "Conversion not implemented.")
+renderBlock (Paragraph spans) = p $ traverse_ renderInline spans
+renderBlock _ = p (text "Block conversion not implemented.")
+
+renderInline :: forall a. Inline ~> Markup
+renderInline (Str txt) = text txt
+renderInline _ = text "Inline conversion not implemented."
