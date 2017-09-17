@@ -3,7 +3,7 @@ module Content.Render.Test (tests) where
 import Prelude (Unit, ($), (==), (<>), (<<<), discard, map)
 import Data.List (singleton, (:), List(..))
 import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..))
-import Text.Smolder.HTML (div, p, pre, code, ol, ul, li, blockquote, h1, h3, a)
+import Text.Smolder.HTML (div, p, pre, code, ol, ul, li, blockquote, h1, h3, a, strong, em)
 import Text.Smolder.HTML.Attributes (className, href)
 import Text.Smolder.Markup (text, Markup, (!))
 import Text.Smolder.Renderer.String as MR
@@ -176,6 +176,22 @@ tests = do
             let ptext = "such code!"
             let source = Code false ptext
             let expected = code $ text ptext
+            checkInline source expected
+        test "convert strong" do
+            let ptext1 = "such "
+            let ptext2 = "text!"
+            let source = Strong $ map Str (ptext1 : ptext2 : Nil)
+            let expected = strong $ do
+                  text ptext1
+                  text ptext2
+            checkInline source expected
+        test "convert emphasis" do
+            let ptext1 = "such "
+            let ptext2 = "text!"
+            let source = Emph $ map Str (ptext1 : ptext2 : Nil)
+            let expected = em $ do
+                  text ptext1
+                  text ptext2
             checkInline source expected
 
 check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)
