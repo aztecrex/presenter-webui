@@ -4,7 +4,7 @@ import Prelude ((<>), type (~>), ($), show)
 import Data.List(List(..), (:))
 import Data.Traversable(traverse_)
 import Data.Foldable(intercalate)
-import Text.Markdown.SlamDown(SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..))
+import Text.Markdown.SlamDown(SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..), LinkTarget(..))
 import Text.Smolder.Markup (Markup, MarkupM(..), text, (!), parent)
 import Text.Smolder.HTML (hr, p, div, code, pre, ol, ul, li, blockquote, a, strong, em, br)
 import Text.Smolder.HTML.Attributes (className, href)
@@ -33,6 +33,7 @@ renderInline (Emph spans) = em $ traverse_ renderInline spans
 renderInline SoftBreak = text "\n"
 renderInline LineBreak = br
 renderInline (Entity txt) = text txt
+renderInline (Link spans (InlineLink dest)) = a ! href dest $ traverse_ renderInline spans
 renderInline _ = text "Inline conversion not implemented."
 
 paragraphToLine :: forall a. Block ~> Markup

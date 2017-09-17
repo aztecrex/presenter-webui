@@ -4,7 +4,7 @@ import Prelude (Unit, ($), (==), (<>), (<<<), discard, map)
 import Data.Either(Either)
 import Data.List (singleton, (:), List(..))
 import Text.Markdown.SlamDown.Parser(parseMd)
-import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..))
+import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..), LinkTarget(..))
 import Text.Smolder.HTML (div, p, pre, code, ol, ul, li, blockquote, h1, h3, a, strong, em, br)
 import Text.Smolder.HTML.Attributes (className, href)
 import Text.Smolder.Markup (text, Markup, (!))
@@ -211,6 +211,15 @@ tests = do
             let etext = "&nbsp;"
             let source = Entity etext
             let expected = text etext
+            checkInline source expected
+        test "convert link" do
+            let ltext1 = "such "
+            let ltext2 = "text!"
+            let dest = "https://gjwiley.com"
+            let source = Link (map Str (ltext1 : ltext2 : Nil)) (InlineLink dest)
+            let expected = a ! href dest $ do
+                  text ltext1
+                  text ltext2
             checkInline source expected
 
 check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)
