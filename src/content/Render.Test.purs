@@ -163,10 +163,15 @@ tests = do
             let expected = div $ a ! href dest $ text label
             check source expected
     suite "Content.Render inline elements" do
-        test "convert strt" do
+        test "convert str" do
             let ptext = "such text!"
             let source = Str ptext
             let expected = text ptext
+            checkInline source expected
+        test "convert space" do
+            let ptext = "such text!"
+            let source = Space
+            let expected = text " "
             checkInline source expected
 
 check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)

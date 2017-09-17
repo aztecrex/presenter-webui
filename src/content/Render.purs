@@ -26,6 +26,7 @@ renderBlock _ = p (text "Block conversion not implemented.")
 
 renderInline :: forall a. Inline ~> Markup
 renderInline (Str txt) = text txt
+renderInline Space = text " "
 renderInline _ = text "Inline conversion not implemented."
 
 paragraphToLine :: forall a. Block ~> Markup
