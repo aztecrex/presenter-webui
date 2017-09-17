@@ -1,9 +1,9 @@
 module Content.Render.Test (tests) where
 
-import Prelude (Unit, ($), (==), (<<<), discard)
+import Prelude (Unit, ($), (==), (<>), (<<<), discard)
 import Data.List (singleton, (:), List(..))
-import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..))
-import Text.Smolder.HTML (div, p)
+import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..), CodeBlockType(..))
+import Text.Smolder.HTML (div, p, pre, code)
 import Text.Smolder.Markup (text, Markup)
 import Text.Smolder.Renderer.String as MR
 import Control.Monad.Eff (Eff)
@@ -58,6 +58,18 @@ tests = do
                     text ptext2
                     text ptext3
             check source expected
+        test "convert fenced code block" do
+          let line1 = "line 1"
+          let line2 = "line 2"
+          let line3 = "line 3"
+          let lines = line1 : line2 : line3 : Nil
+          let source = singletonMd $ CodeBlock (Fenced true "cpp") lines
+          let expected = div $ do
+                pre $ code $ text $
+                  line1 <> "\n" <> line2 <> "\n" <> line3
+          check source expected
+
+
 
 
 check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)
