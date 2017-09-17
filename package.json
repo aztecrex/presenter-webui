@@ -7,9 +7,11 @@
     "prep": "npm install --silent && psc-package update",
     "build": "npm test && rm -rf build && webpack --progress -p --display-error-details",
     "start": "webpack-dev-server --open --hot --inline",
+    "compile": "pulp build",
     "test": "pulp test",
     "clean": "git clean -xdf && rm -rf .psc-package",
-    "repl": "pulp repl"
+    "repl": "pulp repl",
+    "version": "pulp --version"
   },
   "repository": {
     "type": "git",
