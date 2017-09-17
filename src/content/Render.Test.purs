@@ -79,6 +79,16 @@ tests = do
                 pre $ code ! className "language-cpp" $ text $
                   line1 <> "\n" <> line2 <> "\n" <> line3
           check source expected
+        test "convert indented code block" do
+          let line1 = "line 1"
+          let line2 = "line 2"
+          let line3 = "line 3"
+          let lines = line1 : line2 : line3 : Nil
+          let source = singletonMd $ CodeBlock Indented lines
+          let expected = div $ do
+                pre $ code $ text $
+                  line1 <> "\n" <> line2 <> "\n" <> line3
+          check source expected
 
 
 

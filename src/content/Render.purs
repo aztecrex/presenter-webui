@@ -16,6 +16,7 @@ renderBlock :: forall a. Block ~> Markup
 renderBlock (Paragraph spans) = p $ traverse_ renderInline spans
 renderBlock (CodeBlock (Fenced _ "") lines) = pre $ code $ text $ intercalate "\n" lines
 renderBlock (CodeBlock (Fenced _ language) lines) = pre $ code ! className ("language-" <> language) $ text $ intercalate "\n" lines
+renderBlock (CodeBlock Indented lines) = pre $ code $ text $ intercalate "\n" lines
 renderBlock _ = p (text "Block conversion not implemented.")
 
 renderInline :: forall a. Inline ~> Markup
