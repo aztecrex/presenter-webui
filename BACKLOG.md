@@ -1,8 +1,8 @@
 # Current
 
 - ZFD
-  - provisioning commands
-  - automatically build and deploy website
+  - ~~provisioning commands (templates initially)~~
+  - ~~automatically build and deploy website~~
 
 - show a presentation from Github coordinates
   - use this project, file: `functional-and-serverless.present.md`
