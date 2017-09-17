@@ -1,7 +1,7 @@
 module Content.Render.Test (tests) where
 
-import Prelude (Unit, ($), (==), (<<<))
-import Data.List (singleton)
+import Prelude (Unit, ($), (==), (<<<), discard)
+import Data.List (singleton, (:), List(..))
 import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..))
 import Text.Smolder.HTML (div, p)
 import Text.Smolder.Markup (text, Markup)
@@ -38,6 +38,14 @@ tests = do
             let source = paragraphMd ptext
             let expected = div $ do
                              p $ text ptext
+            check source expected
+        test "convert multiple paragraphs" do
+            let ptext1 = "such text!"
+            let ptext2 = "such more text!"
+            let source = SlamDown (blockp ptext1 : blockp ptext2 : Nil)
+            let expected = div $ do
+                             p $ text ptext1
+                             p $ text ptext2
             check source expected
 
 
