@@ -46,3 +46,7 @@ tests = do
             let actual = slides $ SlamDown ( Rule : p2 : p3 : Rule : Nil) :: SlamDown
             let expected = blank : (slam p2 <> slam p3) : blank : Nil
             assert "break at rules" $ actual == expected
+        test "just rules" do
+            let actual = slides $ SlamDown ( Rule : Rule : Rule : Nil) :: SlamDown
+            let expected = blank : blank : blank : blank : Nil
+            assert "break at rules" $ actual == expected
