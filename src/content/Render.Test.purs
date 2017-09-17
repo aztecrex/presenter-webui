@@ -38,7 +38,7 @@ tests :: ∀ fx. Eff ( console :: CONSOLE
           ) Unit
 tests = do
   runTest do
-    suite "Content.Render" do
+    suite "Content.Render block elements" do
         test "convert paragraph" do
             let ptext = "such text!"
             let source = paragraphMd ptext
@@ -162,8 +162,20 @@ tests = do
             let source = SlamDown $ singleton $ LinkReference label dest
             let expected = div $ a ! href dest $ text label
             check source expected
+    suite "Content.Render inline elements" do
+        test "convert strt" do
+            let ptext = "such text!"
+            let source = Str ptext
+            let expected = text ptext
+            checkInline source expected
 
 check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)
 check source expected = do
     let actual = render source
     equal (MR.render expected) (MR.render actual)
+
+checkInline :: forall e a. Inline String -> Markup a -> Test (console :: CONSOLE | e)
+checkInline source expected = do
+    let embeddedSource = SlamDown $ singleton $ Paragraph $ singleton source
+    let embeddedExpected = div $ p expected
+    check embeddedSource embeddedExpected
