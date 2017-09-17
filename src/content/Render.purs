@@ -6,8 +6,8 @@ import Data.Traversable(traverse_)
 import Data.Foldable(intercalate)
 import Text.Markdown.SlamDown(SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..))
 import Text.Smolder.Markup (Markup, MarkupM(..), text, (!), parent)
-import Text.Smolder.HTML (hr, p, div, code, pre, ol, ul, li, blockquote)
-import Text.Smolder.HTML.Attributes (className)
+import Text.Smolder.HTML (hr, p, div, code, pre, ol, ul, li, blockquote, a)
+import Text.Smolder.HTML.Attributes (className, href)
 
 render :: forall a. SlamDownP ~> Markup
 render (SlamDown blocks) = div $ traverse_ renderBlock blocks
@@ -21,6 +21,7 @@ renderBlock (Lst (Ordered _) items) = ol $ traverse_ (traverse_ paragraphToLine)
 renderBlock (Lst (Bullet _) items) = ul $ traverse_ (traverse_ paragraphToLine) items
 renderBlock (Blockquote blocks) = blockquote $ traverse_ renderBlock blocks
 renderBlock (Header level spans) = parent ("h" <> show level) $ traverse_ renderInline spans
+renderBlock (LinkReference txt url) = a ! href url $ text txt
 renderBlock _ = p (text "Block conversion not implemented.")
 
 renderInline :: forall a. Inline ~> Markup

@@ -3,8 +3,8 @@ module Content.Render.Test (tests) where
 import Prelude (Unit, ($), (==), (<>), (<<<), discard, map)
 import Data.List (singleton, (:), List(..))
 import Text.Markdown.SlamDown (SlamDown, SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..))
-import Text.Smolder.HTML (div, p, pre, code, ol, ul, li, blockquote, h1, h3)
-import Text.Smolder.HTML.Attributes (className)
+import Text.Smolder.HTML (div, p, pre, code, ol, ul, li, blockquote, h1, h3, a)
+import Text.Smolder.HTML.Attributes (className, href)
 import Text.Smolder.Markup (text, Markup, (!))
 import Text.Smolder.Renderer.String as MR
 import Control.Monad.Eff (Eff)
@@ -155,6 +155,12 @@ tests = do
                              text ptext2
                              text ptext3
                              text ptext4
+            check source expected
+        test "convert link reference" do
+            let linkText = "destination"
+            let hrefValue = "https://gregwiley.com"
+            let source = SlamDown $ singleton $ LinkReference linkText hrefValue
+            let expected = div $ a ! href hrefValue $ text linkText
             check source expected
 
 check :: forall e a. SlamDown -> Markup a -> Test (console :: CONSOLE | e)
