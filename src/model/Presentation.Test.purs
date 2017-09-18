@@ -15,7 +15,7 @@ import Test.Unit.Main (runTest)
 import Test.Unit.Assert (assert, equal)
 import Test.Unit.Console (TESTOUTPUT)
 
-import Model.Presentation(initial, create, presentable, size, slide)
+import Model.Presentation(initial, create, presentable, size, slide, next, previous, reset)
 
 tests :: ∀ fx. Eff ( console :: CONSOLE
                   , testOutput :: TESTOUTPUT
@@ -40,6 +40,47 @@ tests = do
         let actualNumber = map _.number s
         equal (testSlides !! 0) actualContent
         equal (Just 1) actualNumber
+      test "next not presentable" do
+        assert "not presentable" $ not $ presentable $ next initial
+      test "previous not presentable" do
+        assert "not presentable" $ not $ presentable $ previous initial
+      test "reset not presentable" do
+        assert "not presentable" $ not $ presentable $ reset initial
+      test "next presentable" do
+        let pres = create testSource
+        let actual = slide $ next pres
+        let actualContent = map _.content actual
+        let actualNumber = map _.number actual
+        equal (testSlides !! 1) actualContent
+        equal (Just 2) actualNumber
+      test "previous presentable" do
+        let pres = create testSource
+        let actual = slide $ previous $ next $ next pres
+        let actualContent = map _.content actual
+        let actualNumber = map _.number actual
+        equal (testSlides !! 1) actualContent
+        equal (Just 2) actualNumber
+      test "reset presentable" do
+        let pres = create testSource
+        let actual = slide $ reset $ next $ next pres
+        let actualContent = map _.content actual
+        let actualNumber = map _.number actual
+        equal (testSlides !! 0) actualContent
+        equal (Just 1) actualNumber
+      test "lower clamp presentable" do
+        let pres = create testSource
+        let actual = slide $ previous pres
+        let actualContent = map _.content actual
+        let actualNumber = map _.number actual
+        equal (testSlides !! 0) actualContent
+        equal (Just 1) actualNumber
+      test "upper clamp presentable" do
+        let pres = create testSource
+        let actual = slide $ next $ next $ next $ next $ next pres
+        let actualContent = map _.content actual
+        let actualNumber = map _.number actual
+        equal (testSlides !! 2) actualContent
+        equal (Just 3) actualNumber
 
 
 

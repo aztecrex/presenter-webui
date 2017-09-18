@@ -5,10 +5,13 @@ module Model.Presentation (
     create,
     presentable,
     size,
-    slide
+    slide,
+    next,
+    previous,
+    reset
 ) where
 
-import Prelude (($), map, (+))
+import Prelude (($), map, (+), clamp, (-))
 import Data.List (List(..), (:), length, (!!))
 import Data.Either (Either(..), isRight)
 import Data.Maybe (Maybe(..))
@@ -48,3 +51,18 @@ hydrate index content = { number: index + 1, content }
 slide :: Presentation -> Slide
 slide (Left _) = Nothing
 slide (Right {index: i, slides: (c :| cs)}) = map (hydrate i) (( c : cs) !! i)
+
+clampIndex :: Presentation -> Int -> Int
+clampIndex p = clamp 0 (size p - 1)
+
+next :: Presentation -> Presentation
+next pres@(Right d) = Right (d { index = clampIndex pres (d.index + 1)})
+next other = other
+
+previous :: Presentation -> Presentation
+previous pres@(Right d) = Right (d { index = clampIndex pres (d.index - 1) })
+previous other = other
+
+reset :: Presentation -> Presentation
+reset pres@(Right d) = Right (d { index = 0 })
+reset other = other
