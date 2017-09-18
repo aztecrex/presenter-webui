@@ -9,7 +9,8 @@
     "start": "webpack-dev-server --open --hot --inline",
     "compile": "pulp build",
     "test": "pulp test",
-    "clean": "git clean -xdf && rm -rf .psc-package",
+    "superclean": "git clean -xdf && rm -rf .psc-package",
+    "clean": "rm -rf build output",
     "repl": "pulp repl",
     "version": "pulp --version"
   },
