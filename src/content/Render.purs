@@ -9,10 +9,10 @@ import Text.Smolder.Markup (Markup, MarkupM(..), text, (!), parent)
 import Text.Smolder.HTML (hr, p, div, code, pre, ol, ul, li, blockquote, a, strong, em, br, img)
 import Text.Smolder.HTML.Attributes (className, href, src, alt)
 
-render :: forall a. SlamDownP ~> Markup
+render :: forall a b. SlamDownP a -> Markup b
 render (SlamDown blocks) = div $ traverse_ renderBlock blocks
 
-renderBlock :: forall a. Block ~> Markup
+renderBlock :: forall a b. Block a -> Markup b
 renderBlock (Paragraph spans) = p $ traverse_ renderInline spans
 renderBlock (CodeBlock (Fenced _ "") lines) = pre $ code $ text $ intercalate "\n" lines
 renderBlock (CodeBlock (Fenced _ language) lines) = pre $ code ! className ("language-" <> language) $ text $ intercalate "\n" lines
@@ -24,7 +24,7 @@ renderBlock (Header level spans) = parent ("h" <> show level) $ traverse_ render
 renderBlock (LinkReference label dest) = a ! href dest $ text label
 renderBlock _ = p (text "Block conversion not implemented.")
 
-renderInline :: forall a. Inline ~> Markup
+renderInline :: forall a b. Inline a -> Markup b
 renderInline (Str txt) = text txt
 renderInline Space = text " "
 renderInline (Code _ txt) = code $ text txt
@@ -42,6 +42,6 @@ stringPart (Str txt) = txt
 stringPart Space = " "
 stringPart _ = ""
 
-paragraphToLine :: forall a. Block ~> Markup
+paragraphToLine :: forall a b. Block a -> Markup b
 paragraphToLine (Paragraph spans) = li $ traverse_ renderInline spans
 paragraphToLine b = renderBlock b
