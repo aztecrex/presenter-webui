@@ -1,12 +1,11 @@
 module Content.Render (render) where
 
-import Prelude ((<>), type (~>), ($), show)
-import Data.List(List(..), (:))
+import Prelude ((<>), ($), show )
 import Data.Traversable(traverse_)
 import Data.Foldable(intercalate, foldMap)
 import Text.Markdown.SlamDown(SlamDownP(..), Block(..), Inline(..), CodeBlockType(..), ListType(..), LinkTarget(..))
-import Text.Smolder.Markup (Markup, MarkupM(..), text, (!), parent)
-import Text.Smolder.HTML (hr, p, div, code, pre, ol, ul, li, blockquote, a, strong, em, br, img)
+import Text.Smolder.Markup (Markup, text, (!), parent)
+import Text.Smolder.HTML (p, div, code, pre, ol, ul, li, blockquote, a, strong, em, br, img)
 import Text.Smolder.HTML.Attributes (className, href, src, alt)
 
 render :: forall a b. SlamDownP a -> Markup b
