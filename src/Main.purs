@@ -75,12 +75,13 @@ foldp Restart s = { state: initialState, effects: [] }
 view :: State -> HTML Event
 view state =
   div do
-    content state
-    div $ text $ "Slide " <> (show state.index)
-    br
     button #! onClick (const Previous) $ text "Previous"
     button #! onClick (const Next) $ text "Next"
     button #! onClick (const Restart) $ text "Restart"
+    br
+    div $ text $ "Slide " <> (show state.index) <> "/" <> show (numSlides state)
+    br
+    content state
 
 
 main :: ∀ fx. Eff (CoreEffects fx) Unit
