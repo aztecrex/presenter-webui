@@ -19,5 +19,5 @@ tests :: ∀ fx. Eff ( console :: CONSOLE
 tests = do
   runTest do
     suite "Model.State" do
-      test "initial presentation is not ready" do
-        assert "should be not ready" $ not $ presentable $ presentation initial
+      test "initial presentation is not presentable" do
+        assert "should be not presentable" $ not $ presentable $ presentation initial
