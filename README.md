@@ -15,9 +15,9 @@ The most recent deployment is available on the [live site](https://present.banjo
 Build is based on Node and NPM. Local versions of the Purescript compiler, build tooling (Pulp), and dependency manager (Bower) are installed as part of prep.
 
 - install node and npm
-- `./prep.sh` prepare node and purescript environment
-- `./test.sh` to run unit tests
-- `./run.sh` to run webpack dev server
+- `npm run prep` prepare node and purescript environment
+- `npm test` to run unit tests
+- `./rum.sh` to run webpack dev server
 - `./build.sh` to build static site; results in `./build/`
 - `./publish.sh` to publish static site to origin bucket (see provisioning)
 

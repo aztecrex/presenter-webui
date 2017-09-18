@@ -1,9 +1,7 @@
 module Main where
 
 import Prelude hiding (div)
-import Data.List (List, length, (!!))
 import Data.Maybe(Maybe(..))
-import Data.Either (Either(..))
 import Control.Monad.Eff (Eff)
 import Pux (CoreEffects, EffModel, start)
 import Pux.DOM.Events (onClick)
@@ -11,10 +9,8 @@ import Pux.DOM.HTML (HTML)
 import Pux.Renderer.React (renderToDOM)
 import Text.Smolder.HTML (button, div, br, p)
 import Text.Smolder.Markup (text, (#!))
-import Text.Markdown.SlamDown (SlamDown)
-import Text.Markdown.SlamDown.Parser (parseMd)
-import Content.Slide (slides)
 import Content.Render (render)
+import Model.Presentation as P
 
 data Event = Next | Previous | Restart
 
@@ -42,47 +38,34 @@ Wasn't that just the greatest presentation?
 
 """
 
-load :: String -> Either String (List SlamDown)
-load src = map slides (parseMd src)
-
-type State = {
-  index :: Int,
-  maybePresentation :: Either String (List SlamDown)
-}
+type State = P.Presentation
 
 initialState :: State
-initialState = { index: 1, maybePresentation: load slideSource }
+initialState = P.create slideSource
 
 numSlides :: State -> Int
-numSlides { index: _, maybePresentation: Left err} = 0
-numSlides { index: _, maybePresentation: Right ss} = length ss
+numSlides = P.size
 
-renderSlide :: forall b. Int -> List SlamDown -> HTML b
-renderSlide index slides = case slides !! (index - 1) of
-   Nothing -> div $ p $ text "Out of range"
-   Just md -> render md
-
-content :: forall a. State -> HTML a
-content { index: _, maybePresentation: Left err} = div $ p $ text $ "No slides. " <> err
-content { index: i, maybePresentation: Right ss} = renderSlide i ss
-
+handle :: Event -> State -> State
+handle Next s = P.next s
+handle Previous s = P.previous s
+handle Restart s = P.reset s
 
 foldp :: ∀ fx. Event -> State -> EffModel State Event fx
-foldp Next s = { state: s {index = if s.index >= numSlides s then numSlides s else s.index + 1 }, effects: [] }
-foldp Previous s  = { state: s { index =  if s.index <= 1 then 1 else s.index - 1 }, effects: [] }
-foldp Restart s = { state: initialState, effects: [] }
+foldp ev s = { state: handle ev s, effects: [] }
 
 view :: State -> HTML Event
 view state =
-  div do
-    button #! onClick (const Previous) $ text "Previous"
-    button #! onClick (const Next) $ text "Next"
-    button #! onClick (const Restart) $ text "Restart"
-    br
-    div $ text $ "Slide " <> (show state.index) <> "/" <> show (numSlides state)
-    br
-    content state
-
+  case P.slide state of
+     Nothing -> div $ p $ text "No slide."
+     Just {number, content} -> do
+        button #! onClick (const Previous) $ text "Previous"
+        button #! onClick (const Next) $ text "Next"
+        button #! onClick (const Restart) $ text "Restart"
+        br
+        div $ text $ "Slide " <> (show number) <> "/" <> show (P.size state)
+        br
+        render content
 
 main :: ∀ fx. Eff (CoreEffects fx) Unit
 main = do
