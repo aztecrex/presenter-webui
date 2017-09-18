@@ -1,9 +1,7 @@
 module Main where
 
 import Prelude hiding (div)
-import Data.List (List, length, (!!))
 import Data.Maybe(Maybe(..))
-import Data.Either (Either(..))
 import Control.Monad.Eff (Eff)
 import Pux (CoreEffects, EffModel, start)
 import Pux.DOM.Events (onClick)
@@ -11,9 +9,6 @@ import Pux.DOM.HTML (HTML)
 import Pux.Renderer.React (renderToDOM)
 import Text.Smolder.HTML (button, div, br, p)
 import Text.Smolder.Markup (text, (#!))
-import Text.Markdown.SlamDown (SlamDown)
-import Text.Markdown.SlamDown.Parser (parseMd)
-import Content.Slide (slides)
 import Content.Render (render)
 import Model.Presentation as P
 
