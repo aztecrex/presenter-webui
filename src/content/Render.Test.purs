@@ -19,8 +19,6 @@ import Test.Unit.Assert (equal)
 
 import Content.Render (render)
 
-
-
 para :: forall a. String -> Block a
 para txt = Paragraph $ singleton $ Str txt
 
