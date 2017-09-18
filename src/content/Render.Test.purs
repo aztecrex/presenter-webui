@@ -1,6 +1,6 @@
 module Content.Render.Test (tests) where
 
-import Prelude (Unit, ($), (==), (<>), (<<<), discard, map)
+import Prelude (Unit, ($), (<>), (<<<), discard, map)
 import Data.Either(Either)
 import Data.List (singleton, (:), List(..))
 import Text.Markdown.SlamDown.Parser(parseMd)
@@ -10,12 +10,12 @@ import Text.Smolder.HTML.Attributes (className, href, src, alt)
 import Text.Smolder.Markup (text, Markup, (!))
 import Text.Smolder.Renderer.String as MR
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, logShow)
+import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Aff.AVar (AVAR)
 import Test.Unit (suite, test, Test)
 import Test.Unit.Console (TESTOUTPUT)
 import Test.Unit.Main (runTest)
-import Test.Unit.Assert (assert, equal)
+import Test.Unit.Assert (equal)
 
 import Content.Render (render)
 
@@ -42,7 +42,6 @@ tests :: ∀ fx. Eff ( console :: CONSOLE
                   | fx
           ) Unit
 tests = do
-  logShow $ parsed
   runTest do
     suite "Content.Render block elements" do
         test "convert paragraph" do
