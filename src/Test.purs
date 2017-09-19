@@ -10,7 +10,7 @@ import Model.Presentation.Test as Presentation
 import Content.Slide.Test as Slide
 import Content.Render.Test as Render
 import Provision.Runtime.Test as Runtime
-
+import UI.View.Test as View
 
 main :: ∀ fx. Eff ( console :: CONSOLE
                   , testOutput :: TESTOUTPUT
@@ -22,4 +22,6 @@ main = do
   Presentation.tests
   Slide.tests
   Render.tests
+  View.tests
   Runtime.tests
+

@@ -1,6 +1,7 @@
 module Model.State (
     initial,
-    presentation
+    presentation,
+    State
     ) where
 
 import Model.Presentation as P
