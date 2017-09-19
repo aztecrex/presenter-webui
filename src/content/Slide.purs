@@ -17,8 +17,6 @@ splitr :: ∀ a. Eq a => a -> a -> NonEmpty List (List a) -> NonEmpty List (List
 splitr delim elem accum | elem == delim = break accum
                         | otherwise     = prepend elem accum
 
--- fromNonEmpty :: forall f a r. (a -> f a -> r) -> NonEmpty f a -> r
-
 unwrap :: ∀ a. NonEmpty List a -> List a
 unwrap = fromNonEmpty Cons
 

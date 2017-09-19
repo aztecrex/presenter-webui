@@ -1,4 +1,4 @@
-module UI.View (view, Event(..)) where
+module UI.View (view) where
 
 import Prelude (($), discard, const, (<>), show)
 import Data.Maybe (Maybe(..))
@@ -9,8 +9,7 @@ import Pux.DOM.HTML (HTML)
 import Model.State (State, presentation)
 import Model.Presentation (slide, size)
 import Content.Render(render)
-
-data Event = Next | Previous | Restart
+import UI.Event(Event(..))
 
 view :: forall a. State -> HTML Event
 view state = do
