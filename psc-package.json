@@ -8,6 +8,7 @@
         "psci-support",
         "prelude",
         "eff",
-        "markdown"
+        "markdown",
+        "lens"
     ]
 }

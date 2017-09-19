@@ -1,18 +1,14 @@
 module Main where
 
 import Prelude hiding (div)
-import Data.Maybe(Maybe(..))
 import Control.Monad.Eff (Eff)
 import Pux (CoreEffects, EffModel, start)
-import Pux.DOM.Events (onClick)
-import Pux.DOM.HTML (HTML)
 import Pux.Renderer.React (renderToDOM)
-import Text.Smolder.HTML (button, div, br, p)
-import Text.Smolder.Markup (text, (#!))
-import Content.Render (render)
+import UI.View (view)
+import UI.Event (Event(..))
+import UI.Control (reduce)
 import Model.Presentation as P
-
-data Event = Next | Previous | Restart
+import Model.State as S
 
 slideSource :: String
 slideSource = """
@@ -38,34 +34,19 @@ Wasn't that just the greatest presentation?
 
 """
 
-type State = P.Presentation
+type State = S.State
 
 initialState :: State
-initialState = P.create slideSource
+initialState = { presentation: P.create slideSource } -- temporary
 
-numSlides :: State -> Int
-numSlides = P.size
-
-handle :: Event -> State -> State
-handle Next s = P.next s
-handle Previous s = P.previous s
-handle Restart s = P.reset s
+-- reduce :: Event -> State -> State
+-- reduce Next s = s { presentation = P.next s.presentation }
+-- reduce Previous s = s { presentation = P.previous s.presentation }
+-- reduce Restart s = s { presentation = P.reset s.presentation }
+-- reduce _ s = s
 
 foldp :: ∀ fx. Event -> State -> EffModel State Event fx
-foldp ev s = { state: handle ev s, effects: [] }
-
-view :: State -> HTML Event
-view state =
-  case P.slide state of
-     Nothing -> div $ p $ text "No slide."
-     Just {number, content} -> do
-        button #! onClick (const Previous) $ text "Previous"
-        button #! onClick (const Next) $ text "Next"
-        button #! onClick (const Restart) $ text "Restart"
-        br
-        div $ text $ "Slide " <> (show number) <> "/" <> show (P.size state)
-        br
-        render content
+foldp ev s = { state: reduce ev s, effects: [] }
 
 main :: ∀ fx. Eff (CoreEffects fx) Unit
 main = do
