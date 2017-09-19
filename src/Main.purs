@@ -37,15 +37,13 @@ type State = S.State
 initialState :: State
 initialState = { presentation: P.create slideSource } -- temporary
 
-
-handle :: Event -> State -> State
-handle Next s = s { presentation = P.next s.presentation }
-handle Previous s = s { presentation = P.previous s.presentation }
-handle Restart s = s { presentation = P.reset s.presentation }
+reduce :: Event -> State -> State
+reduce Next s = s { presentation = P.next s.presentation }
+reduce Previous s = s { presentation = P.previous s.presentation }
+reduce Restart s = s { presentation = P.reset s.presentation }
 
 foldp :: ∀ fx. Event -> State -> EffModel State Event fx
-foldp ev s = { state: handle ev s, effects: [] }
-
+foldp ev s = { state: reduce ev s, effects: [] }
 
 main :: ∀ fx. Eff (CoreEffects fx) Unit
 main = do
