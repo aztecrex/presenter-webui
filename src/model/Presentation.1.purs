@@ -9,7 +9,7 @@ module Model.Presentation.New (
     create
 ) where
 
-import Prelude (($), map, (+), clamp, (-), (<<<), compose)
+import Prelude (($), map, (+), clamp, (-), (<<<), compose, class Eq, (==), (&&))
 import Data.List (List(..), (:), length, (!!))
 import Data.Either (Either(..))
 import Data.Maybe (fromJust)
@@ -30,6 +30,14 @@ type PresentationR = {
 }
 newtype Presentation = Pr PresentationR
 newtype Slide = Sl PresentationR
+
+rEq :: PresentationR -> PresentationR -> Boolean
+rEq a b =
+    a._index == b._index &&
+    a._content == b._content
+
+instance eqPresentation :: Eq Presentation where
+  eq (Pr a) (Pr b) = rEq a b
 
 listSize :: forall a. NonEmpty List a -> Int
 listSize = fromNonEmpty $ (compose length) <<< Cons

@@ -1,6 +1,6 @@
 module Model.Presentation.Test (tests) where
 
-import Prelude (Unit, not, ($), id, map, const, discard, (<<<), (#), (-), (+), negate)
+import Prelude (Unit, not, ($), id, map, const, discard, (<<<), (#), (-), (+), negate, (==), (/=))
 import Data.List (List(..), (!!), length)
 import Data.Either (Either, either, fromRight)
 import Data.Maybe (Maybe(..), isJust, fromJust)
@@ -63,6 +63,24 @@ tests = do
         let moved = ((testPres ^. P.slide) # P.number +~ up) # P.number -~ down
         equal (testSlide (up - down)) $ moved ^. P.content
         equal (1 + up - down) $ moved ^. P.number
+      test "presentation equal" do
+         let src = "# Slide"
+         let a = unsafeCreatePres src
+         let b = unsafeCreatePres src
+         assert "they are equal" $ a == b
+         assert "commutative" $ b == a
+         assert "same" $ a == a
+      test "presentation nequal" do
+         let a = unsafeCreatePres "# Slide 1\n---\n# Slide 2"
+         let b = unsafeCreatePres "# Slide"
+         assert "they are noe equal" $ a /= b
+         assert "commutative" $ b /= a
+
+
+
+
+unsafeCreatePres :: String -> P.Presentation
+unsafeCreatePres src = unsafePartial $ fromRight $ P.create src
 
 testSlides :: List SlamDown
 testSlides = unsafePartial fromRight $ map slides $ parseMd testSource
@@ -71,7 +89,7 @@ testSlide :: Int -> SlamDown
 testSlide i = unsafePartial fromJust $ testSlides !! i
 
 testPres :: P.Presentation
-testPres = unsafePartial $ fromRight $ P.create testSource
+testPres = unsafeCreatePres testSource
 
 testSource :: String
 testSource = """
