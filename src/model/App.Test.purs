@@ -34,8 +34,8 @@ tests = do
         equal 0 (PO.size $ presentation initial)
         equal false (PO.presentable $ presentation initial)
 
-testPres :: P.Presentation
-testPres = unsafePartial $ fromRight $ P.create testSource
+-- testPres :: P.Presentation
+-- testPres = unsafePartial $ fromRight $ P.create testSource
 
 testSource :: String
 testSource = """

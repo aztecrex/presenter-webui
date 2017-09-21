@@ -1,22 +1,24 @@
 module Model.Presentation.New (
-    PresentationError,
-    Presentation,
-    Slide,
-    size,
-    slide,
-    content,
-    number,
-    create
+  Presentation,
+  PresentationError,
+  create,
+  content,
+  number,
+  size
 ) where
 
-import Prelude (($), map, (+), clamp, (-), (<<<), compose, class Eq, class Show, show, (==), (&&), (<>))
+import Prelude (id, (#), ($), map, (+), clamp, (-), (<<<), compose, class Eq, class Show, show, (==), (&&), (<>))
 import Data.List (List(..), (:), length, (!!))
 import Data.Either (Either(..))
 import Data.Maybe (fromJust)
 import Partial.Unsafe (unsafePartial)
 import Data.NonEmpty (NonEmpty, (:|), fromNonEmpty)
 -- import Optic.Core
+import Data.Newtype (class Newtype, unwrap)
+import Data.Symbol (SProxy(..))
 import Data.Lens
+import Data.Lens.Record (prop)
+-- import Data.Lens.Iso.Newtype
 import Text.Markdown.SlamDown (SlamDown)
 import Text.Markdown.SlamDown.Parser (parseMd)
 import Content.Slide (slides)
@@ -24,54 +26,64 @@ import Content.Slide (slides)
 type PresentationError = String
 
 type Content = SlamDown
-
+type ContentList = NonEmpty List Content
 type PresentationR = {
     _index :: Int,
-    _content :: NonEmpty List Content
+    _content :: ContentList
 }
 newtype Presentation = Pr PresentationR
-newtype Slide = Sl PresentationR
-
-rEq :: PresentationR -> PresentationR -> Boolean
-rEq a b =
-    a._index == b._index &&
-    a._content == b._content
+derive instance newtypePresentation :: Newtype Presentation _
 
 rShow :: PresentationR -> String
 rShow {_index, _content : (c :| cs)} = "{page: " <> show (_index + 1) <> ", content: " <> show (c :cs) <> "}"
 
-instance eqPresentation :: Eq Presentation where
-  eq (Pr a) (Pr b) = rEq a b
-
 instance showPresentation :: Show Presentation where
   show (Pr r) = rShow r
 
-listSize :: forall a. NonEmpty List a -> Int
-listSize = fromNonEmpty $ (compose length) <<< Cons
+rEq :: forall r. PresentationR -> PresentationR -> Boolean
+rEq a b = a._index == b._index && a._content == b._content
 
-size :: forall r. Fold' r Presentation Int
-size = to $ get'
-  where get' (Pr {_content}) = listSize _content
+instance eqPresentation :: Eq Presentation where
+  eq (Pr a) (Pr b) = rEq a b
 
-clampIndex :: PresentationR -> Int -> Int
-clampIndex {_content} = clamp 0 ((listSize _content) - 1)
+contentListLength :: ContentList -> Int
+contentListLength = fromNonEmpty $ (compose length) <<< Cons
 
-slide :: Lens' Presentation Slide
-slide = lens get' set'
-  where get' (Pr r) = Sl r
-        set' _ (Sl r) = Pr r
+contentAt :: Int -> ContentList -> Content
+contentAt i (c :| cs) = unsafePartial $ fromJust $ (c : cs) !! i
 
-listAt :: forall a. NonEmpty List a -> Int -> a
-listAt (c :| cs) i = unsafePartial $ fromJust $ (c : cs) !! i
+_record :: Iso' Presentation PresentationR
+_record = iso unwrap Pr
 
-content :: forall r. Fold' r Slide Content
-content = to get'
-  where get' (Sl {_index, _content}) = listAt _content _index
+_index :: forall r. Lens' { _index :: Int | r } Int
+_index = prop (SProxy :: SProxy "_index")
 
-number :: Lens' Slide Int
-number = lens get' set'
-  where get' (Sl {_index}) = _index + 1
-        set' (Sl r) i = Sl (r { _index = clampIndex r (i - 1) })
+_content :: forall r. Lens' { _content :: ContentList | r } ContentList
+_content = prop (SProxy :: SProxy "_content")
+
+_length :: forall s. Fold' s ContentList Int
+_length = to contentListLength
+
+_clampedIndex :: forall r. Lens' { _index :: Int, _content :: ContentList | r} Int
+_clampedIndex = lens get' set'
+  where get' rec = rec ^. _index
+        set' rec i = rec # _index .~ (clamp 0 ((rec ^. _content <<< _length) - 1) i)
+
+_extract :: forall s r. Fold' s { _index :: Int, _content :: ContentList | r} Content
+_extract = to get'
+  where get' rec = contentAt rec._index rec._content
+
+_oneOff :: Iso' Int Int
+_oneOff = iso (_ + 1) (_ - 1)
+
+size :: forall s. Fold' s Presentation Int
+size = _record <<< _content <<< _length
+
+number :: Lens' Presentation Int
+number = _record <<< _clampedIndex <<< _oneOff
+
+content :: forall s. Fold' s Presentation Content
+content = _record <<< _extract
 
 create :: String -> Either PresentationError Presentation
 create source = case map slides $ parseMd source of
