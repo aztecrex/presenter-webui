@@ -1,6 +1,6 @@
 module Model.Presentation.Test (tests) where
 
-import Prelude (Unit, not, ($), id, map, const, discard, (<<<), (#))
+import Prelude (Unit, not, ($), id, map, const, discard, (<<<), (#), (-))
 import Data.List (List(..), (!!), length)
 import Data.Either (Either, either, fromRight)
 import Data.Maybe (Maybe(..), isJust, fromJust)
@@ -45,10 +45,24 @@ tests = do
         let expected = testSlide 2
         equal expected actual
       test "change slide number" do
-        let updated = testPres # P.slide .. P.number .~ 3
+        let n = 3
+        let updated = testPres # P.slide .. P.number .~ n
         let actual = updated ^. P.slide .. P.content
-        let expected = testSlide 2
+        let expected = testSlide (n - 1)
         equal expected actual
+        equal n $ updated ^. P.slide .. P.number
+      test "slide number upper bound" do
+        let updated = testPres # P.slide .. P.number .~ 300
+        let actual = updated ^. P.slide .. P.content
+        let expected = testSlide (length testSlides - 1)
+        equal expected actual
+        equal (length testSlides) $ updated ^. P.slide .. P.number
+      test "slide number lower bound" do
+        let updated = testPres # P.slide .. P.number .~ (0)
+        let expected = testSlide 0
+        equal (testSlide 0) $ updated ^. P.slide .. P.content
+        equal 1 $ updated ^. P.slide .. P.number
+
     suite "Model.Presentation" do
       test "initial presentation is not presentable" do
         assert "should be not presentable" $ not $ presentable $ initial
