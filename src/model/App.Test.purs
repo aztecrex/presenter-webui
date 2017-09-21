@@ -1,7 +1,8 @@
 module Model.App.Test (tests) where
 
 import Prelude (Unit, ($), discard, (#))
-import Data.Either(fromRight)
+import Data.Either (fromRight)
+import Data.Maybe (Maybe(..))
 import Partial.Unsafe (unsafePartial)
 import Optic.Core
 import Model.Presentation as PO
@@ -24,6 +25,10 @@ tests :: ∀ fx. Eff ( console :: CONSOLE
           ) Unit
 tests = do
   runTest do
+    -- suite "Model.App" do
+    --   test "assign presentation" do
+    --       let actual = A.create # A.presentation .~ testPres
+    --       equal (Just testPres) (actual ^. A.presentation)
     suite "Model.State" do
       test "initial presentation" do
         equal 0 (PO.size $ presentation initial)

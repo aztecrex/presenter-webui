@@ -9,6 +9,6 @@
         "prelude",
         "eff",
         "markdown",
-        "lens"
+        "profunctor-lenses"
     ]
 }

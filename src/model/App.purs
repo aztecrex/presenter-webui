@@ -3,11 +3,12 @@ module Model.App (
   presentationOrError,
   presentation,
   presentationError,
-  create
+  create,
+  _right, _left
 ) where
 
-import Prelude (class Functor, class Applicative)
-import Data.Either(Either(..))
+import Prelude (class Functor, class Applicative, (<<<), ($))
+import Data.Either(Either(..), either)
 import Data.Maybe(Maybe(..))
 import Optic.Core
 import Model.Presentation.New as P
@@ -17,17 +18,16 @@ type AppR = {
 }
 newtype App = App AppR
 
-_right :: forall l r. Prism' (Either l r) r
-_right = prism' bs' sMa'
-  where bs' = Right
-        sMa' (Right a) = Just a
-        sMa' (Left _) = Nothing
+-- _Right :: Prism (Either c a) (Either c b) a b
+-- _Right = prism Right $ either (Left . Left) Right
 
-_left :: forall l r. Prism' (Either l r) l
-_left = prism' bs' sMa'
-  where bs' = Left
-        sMa' (Left a) = Just a
-        sMa' (Right _) = Nothing
+_right :: forall l r1 r2. Prism (Either l r1) (Either l r2) r1 r2
+_right = prism Right $ either (Left <<< Left) Right
+
+-- _Left :: Prism (Either a c) (Either b c) a b
+-- _Left = prism Left $ either Right (Left . Right)
+_left :: forall l1 l2 r. Prism (Either l1 r) (Either l2 r) l1 l2
+_left = prism Left $ either Right (Left <<< Right)
 
 presentationOrError :: Lens' App (Either P.PresentationError P.Presentation)
 presentationOrError = lens get' set'
