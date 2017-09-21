@@ -41,9 +41,10 @@ size = to $ get'
 clampIndex :: PresentationR -> Int -> Int
 clampIndex {_content} = clamp 0 ((listSize _content) - 1)
 
-slide :: Getter Presentation Slide
-slide = to get'
-  where get' (Pr d) = Sl d
+slide :: Lens' Presentation Slide
+slide = lens get' set'
+  where get' (Pr r) = Sl r
+        set' _ (Sl r) = Pr r
 
 listAt :: forall a. NonEmpty List a -> Int -> a
 listAt (c :| cs) i = unsafePartial $ fromJust $ (c : cs) !! i
