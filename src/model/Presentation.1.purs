@@ -56,7 +56,7 @@ content = to get'
 number :: Lens' Slide Int
 number = lens get' set'
   where get' (Sl {_index}) = _index + 1
-        set' (Sl r) i = Sl (r { _index = clampIndex r i })
+        set' (Sl r) i = Sl (r { _index = clampIndex r (i - 1) })
 
 create :: String -> Either PresentationError Presentation
 create source = case map slides $ parseMd source of
