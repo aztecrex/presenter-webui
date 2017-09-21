@@ -5,7 +5,8 @@ import Data.List (List(..), (!!), length)
 import Data.Either (Either, either, fromRight)
 import Data.Maybe (Maybe(..), isJust, fromJust)
 import Partial.Unsafe (unsafePartial)
-import Optic.Core
+-- import Optic.Core
+import Data.Lens
 import Text.Markdown.SlamDown (SlamDown)
 import Text.Markdown.SlamDown.Parser (parseMd)
 import Content.Slide (slides)
@@ -33,30 +34,30 @@ tests = do
         let expected = length testSlides
         equal expected actual
       test "slide content" do
-        let actual = testPres ^. P.slide .. P.content
+        let actual = testPres ^. P.slide <<< P.content
         let expected = testSlide 0
         equal expected actual
       test "get slide number" do
-        let actual = testPres ^. P.slide .. P.number
+        let actual = testPres ^. P.slide <<< P.number
         equal 1 actual
       test "change slide number" do
         let n = 3
-        let updated = testPres # P.slide .. P.number .~ n
-        let actual = updated ^. P.slide .. P.content
+        let updated = testPres # P.slide <<< P.number .~ n
+        let actual = updated ^. P.slide <<< P.content
         let expected = testSlide (n - 1)
         equal expected actual
-        equal n $ updated ^. P.slide .. P.number
+        equal n $ updated ^. P.slide <<< P.number
       test "slide number upper bound" do
-        let updated = testPres # P.slide .. P.number .~ 300
-        let actual = updated ^. P.slide .. P.content
+        let updated = testPres # P.slide <<< P.number .~ 300
+        let actual = updated ^. P.slide <<< P.content
         let expected = testSlide (length testSlides - 1)
         equal expected actual
-        equal (length testSlides) $ updated ^. P.slide .. P.number
+        equal (length testSlides) $ updated ^. P.slide <<< P.number
       test "slide number lower bound" do
-        let updated = testPres # P.slide .. P.number .~ (0)
+        let updated = testPres # P.slide <<< P.number .~ (0)
         let expected = testSlide 0
-        equal (testSlide 0) $ updated ^. P.slide .. P.content
-        equal 1 $ updated ^. P.slide .. P.number
+        equal (testSlide 0) $ updated ^. P.slide <<< P.content
+        equal 1 $ updated ^. P.slide <<< P.number
       test "relative slide change" do
         let up = 2
         let down = 1

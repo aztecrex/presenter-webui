@@ -15,7 +15,8 @@ import Data.Either (Either(..))
 import Data.Maybe (fromJust)
 import Partial.Unsafe (unsafePartial)
 import Data.NonEmpty (NonEmpty, (:|), fromNonEmpty)
-import Optic.Core
+-- import Optic.Core
+import Data.Lens
 import Text.Markdown.SlamDown (SlamDown)
 import Text.Markdown.SlamDown.Parser (parseMd)
 import Content.Slide (slides)
@@ -48,7 +49,7 @@ instance showPresentation :: Show Presentation where
 listSize :: forall a. NonEmpty List a -> Int
 listSize = fromNonEmpty $ (compose length) <<< Cons
 
-size :: Getter Presentation Int
+size :: forall r. Fold' r Presentation Int
 size = to $ get'
   where get' (Pr {_content}) = listSize _content
 
@@ -63,7 +64,7 @@ slide = lens get' set'
 listAt :: forall a. NonEmpty List a -> Int -> a
 listAt (c :| cs) i = unsafePartial $ fromJust $ (c : cs) !! i
 
-content :: Getter Slide Content
+content :: forall r. Fold' r Slide Content
 content = to get'
   where get' (Sl {_index, _content}) = listAt _content _index
 
