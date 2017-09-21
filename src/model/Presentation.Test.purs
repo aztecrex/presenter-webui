@@ -64,66 +64,6 @@ tests = do
         equal (testSlide (up - down)) $ moved ^. P.content
         equal (1 + up - down) $ moved ^. P.number
 
-    suite "Model.Presentation" do
-      test "initial presentation is not presentable" do
-        assert "should be not presentable" $ not $ presentable $ initial
-      test "create" do
-        let pres = create testSource
-        let actual = size pres
-        let expected = 3
-        equal expected actual
-      test "get slide not presentable" do
-        assert "no slide" $ not $ isJust (slide initial)
-      test "get presentable slide" do
-        let s = slide $ create testSource
-        let actualContent = map _.content s
-        let actualNumber = map _.number s
-        equal (testSlides !! 0) actualContent
-        equal (Just 1) actualNumber
-      test "next not presentable" do
-        assert "not presentable" $ not $ presentable $ next initial
-      test "previous not presentable" do
-        assert "not presentable" $ not $ presentable $ previous initial
-      test "reset not presentable" do
-        assert "not presentable" $ not $ presentable $ reset initial
-      test "next presentable" do
-        let pres = create testSource
-        let actual = slide $ next pres
-        let actualContent = map _.content actual
-        let actualNumber = map _.number actual
-        equal (testSlides !! 1) actualContent
-        equal (Just 2) actualNumber
-      test "previous presentable" do
-        let pres = create testSource
-        let actual = slide $ previous $ next $ next pres
-        let actualContent = map _.content actual
-        let actualNumber = map _.number actual
-        equal (testSlides !! 1) actualContent
-        equal (Just 2) actualNumber
-      test "reset presentable" do
-        let pres = create testSource
-        let actual = slide $ reset $ next $ next pres
-        let actualContent = map _.content actual
-        let actualNumber = map _.number actual
-        equal (testSlides !! 0) actualContent
-        equal (Just 1) actualNumber
-      test "lower clamp presentable" do
-        let pres = create testSource
-        let actual = slide $ previous pres
-        let actualContent = map _.content actual
-        let actualNumber = map _.number actual
-        equal (testSlides !! 0) actualContent
-        equal (Just 1) actualNumber
-      test "upper clamp presentable" do
-        let pres = create testSource
-        let actual = slide $ next $ next $ next $ next $ next pres
-        let actualContent = map _.content actual
-        let actualNumber = map _.number actual
-        equal (testSlides !! 2) actualContent
-        equal (Just 3) actualNumber
-
-
-
 testSlides :: List SlamDown
 testSlides = unsafePartial fromRight $ map slides $ parseMd testSource
 
