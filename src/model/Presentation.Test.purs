@@ -1,9 +1,11 @@
 module Model.Presentation.Test (tests) where
 
-import Prelude (Unit, not, ($), id, map, const, discard)
-import Data.List (List(..), (!!))
-import Data.Either (either)
-import Data.Maybe (Maybe(..), isJust)
+import Prelude (Unit, not, ($), id, map, const, discard, (<<<))
+import Data.List (List(..), (!!), length)
+import Data.Either (Either, either, fromRight)
+import Data.Maybe (Maybe(..), isJust, fromJust)
+import Partial.Unsafe (unsafePartial)
+import Optic.Core
 import Text.Markdown.SlamDown (SlamDown)
 import Text.Markdown.SlamDown.Parser (parseMd)
 import Content.Slide (slides)
@@ -16,6 +18,7 @@ import Test.Unit.Assert (assert, equal)
 import Test.Unit.Console (TESTOUTPUT)
 
 import Model.Presentation(initial, create, presentable, size, slide, next, previous, reset)
+import Model.Presentation.New as P
 
 tests :: ∀ fx. Eff ( console :: CONSOLE
                   , testOutput :: TESTOUTPUT
@@ -24,6 +27,18 @@ tests :: ∀ fx. Eff ( console :: CONSOLE
           ) Unit
 tests = do
   runTest do
+    suite "Model.NewPresentation" do
+      test "size" do
+        let actual = testPres ^. P.size
+        let expected = length testSlides
+        equal expected actual
+      test "slide content" do
+        let actual = testPres ^. P.slide .. P.content
+        let expected = testSlide 0
+        equal expected actual
+      test "get slide number" do
+        let actual = testPres ^. P.slide .. P.number
+        equal 1 actual
     suite "Model.Presentation" do
       test "initial presentation is not presentable" do
         assert "should be not presentable" $ not $ presentable $ initial
@@ -85,7 +100,13 @@ tests = do
 
 
 testSlides :: List SlamDown
-testSlides = either (const Nil) id $ map slides $ parseMd testSource
+testSlides = unsafePartial fromRight $ map slides $ parseMd testSource
+
+testSlide :: Int -> SlamDown
+testSlide i = unsafePartial fromJust $ testSlides !! i
+
+testPres :: P.Presentation
+testPres = unsafePartial $ fromRight $ P.create testSource
 
 testSource :: String
 testSource = """
