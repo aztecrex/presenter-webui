@@ -5,7 +5,7 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Aff.AVar (AVAR)
 import Test.Unit.Console (TESTOUTPUT)
-import Model.State.Test as State
+import Model.App.Test as App
 import Model.Presentation.Test as Presentation
 import Content.Slide.Test as Slide
 import Content.Render.Test as Render
@@ -19,7 +19,7 @@ main :: ∀ fx. Eff ( console :: CONSOLE
                   | fx
           ) Unit
 main = do
-  State.tests
+  App.tests
   Presentation.tests
   Slide.tests
   Render.tests

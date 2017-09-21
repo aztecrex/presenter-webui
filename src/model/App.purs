@@ -1,4 +1,10 @@
-module Model.App.New where
+module Model.App (
+  App,
+  presentationOrError,
+  presentation,
+  presentationError,
+  create
+) where
 
 import Prelude (class Functor, class Applicative)
 import Data.Either(Either(..))
@@ -10,12 +16,6 @@ type AppR = {
   _presentation :: Either P.PresentationError P.Presentation
 }
 newtype App = App AppR
-
--- prism :: forall f p s t a b. Applicative f => Choice p =>
---   (b -> t) -> (s -> Either t a) -> p a (f b) -> p s (f t)
-
--- prism' :: forall s a b.
---   (b -> s) -> (s -> Maybe a) -> Prism s s a b
 
 _right :: forall l r. Prism' (Either l r) r
 _right = prism' bs' sMa'
@@ -29,29 +29,25 @@ _left = prism' bs' sMa'
         sMa' (Left a) = Just a
         sMa' (Right _) = Nothing
 
-presentation' :: Lens' App (Either P.PresentationError P.Presentation)
-presentation' = lens get' set'
+presentationOrError :: Lens' App (Either P.PresentationError P.Presentation)
+presentationOrError = lens get' set'
   where get' (App {_presentation} ) = _presentation
         set' (App r) p = App (r {_presentation = p})
 
--- presentation :: forall p.
---   Functor p
---   => Applicative p
---   => (String -> p String) -> App -> p App
 presentation ::
   forall p. Functor p
   => Applicative p
   => (P.Presentation -> p P.Presentation) -> App -> p App
-presentation = presentation' .. _right
+presentation = presentationOrError .. _right
 
 presentationError :: forall
   p. Functor p
   => Applicative p
   => (P.PresentationError -> p P.PresentationError) -> App -> p App
-presentationError = presentation' .. _left
+presentationError = presentationOrError .. _left
 
-
-
+create :: App
+create = App { _presentation: Left "uninitialized" }
 
 -- initial :: App
 -- initial = { presentation: P.initial }
