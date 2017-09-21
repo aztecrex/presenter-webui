@@ -37,7 +37,7 @@ rEq a b =
     a._content == b._content
 
 rShow :: PresentationR -> String
-rShow {_index, _content} = "{page: " <> show (_index + 1) <> ", content: " <> show _content <> "}"
+rShow {_index, _content : (c :| cs)} = "{page: " <> show (_index + 1) <> ", content: " <> show (c :cs) <> "}"
 
 instance eqPresentation :: Eq Presentation where
   eq (Pr a) (Pr b) = rEq a b
