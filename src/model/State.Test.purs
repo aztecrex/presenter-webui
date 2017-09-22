@@ -1,4 +1,4 @@
-module Model.App.Test (tests) where
+module Model.State.Test (tests) where
 
 import Prelude (Unit, discard, (#), ($), (/=), (==), (<<<))
 import Data.Either (fromRight)
@@ -12,9 +12,9 @@ import Test.Unit (suite, test)
 import Test.Unit.Main (runTest)
 import Test.Unit.Assert (assert, equal)
 import Test.Unit.Console (TESTOUTPUT)
-import Model.Presentation.New (create, number, Presentation)
+import Model.Presentation (create, number, Presentation)
 
-import Model.App (newApp, presentation, _presentation)
+import Model.State (newState, presentation, _presentation)
 
 tests :: ∀ fx. Eff ( console :: CONSOLE
                   , testOutput :: TESTOUTPUT
@@ -23,26 +23,26 @@ tests :: ∀ fx. Eff ( console :: CONSOLE
           ) Unit
 tests = do
   runTest do
-    suite "Model.App" do
+    suite "Model.State" do
       test "no initial presentation" do
-        equal Nothing $ newApp ^. presentation
+        equal Nothing $ newState ^. presentation
       test "presentation" do
-        let app = newApp # presentation .~ Just testPres
+        let app = newState # presentation .~ Just testPres
         let actual = app ^. presentation
         equal (Just testPres) actual
       test "presentation just" do
-        let app = newApp # presentation .~ Just testPres
+        let app = newState # presentation .~ Just testPres
         let update = app # _presentation <<< number +~ 1
         let expected = testPres # number +~ 1
         equal (Just expected) $ update ^. presentation
       test "equality" do
-        let a = newApp # presentation .~ Just (makePres "# Slide")
-        let b = newApp # presentation .~ Just (makePres "# Slide")
-        let other = newApp # presentation .~ Just (makePres "not a slide")
+        let a = newState # presentation .~ Just (makePres "# Slide")
+        let b = newState # presentation .~ Just (makePres "# Slide")
+        let other = newState # presentation .~ Just (makePres "not a slide")
         assert "equal" $ a == b
         assert "commute" $ b == a
         assert "symmetry" $ a == a
-        assert "not equal" $ a /= newApp
+        assert "not equal" $ a /= newState
         assert "not equal" $ a /= other
 
 

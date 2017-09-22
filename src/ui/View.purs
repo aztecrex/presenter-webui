@@ -1,4 +1,4 @@
-module UI.View.New (view) where
+module UI.View (view) where
 
 import Prelude (const, discard, show, ($), (<>))
 import Data.Maybe (maybe)
@@ -7,8 +7,8 @@ import Text.Smolder.HTML (div, p, button, br)
 import Pux.DOM.Events (onClick)
 import Pux.DOM.HTML (HTML)
 import Data.Lens ((^.))
-import Model.App (App, presentation)
-import Model.Presentation.New (Presentation, content, number, size)
+import Model.State (State, presentation)
+import Model.Presentation (Presentation, content, number, size)
 import Content.Render(render)
 import UI.Event(Event(..))
 
@@ -28,5 +28,5 @@ slide pres = do
     br
     render $ pres ^. content
 
-view :: App -> HTML Event
+view :: State -> HTML Event
 view app = maybe noslide slide $ app ^. presentation

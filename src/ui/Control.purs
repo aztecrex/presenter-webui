@@ -6,11 +6,11 @@ import Prelude (const, (#), ($), (<<<))
 import Data.Either (either)
 import Data.Maybe (Maybe(..))
 import Data.Lens ((+~), (-~), (.~))
-import Model.App (App, presentation, _presentation)
-import Model.Presentation.New (create, number)
+import Model.State (State, presentation, _presentation)
+import Model.Presentation (create, number)
 import UI.Event (Event(..))
 
-reduce :: Event -> App -> App
+reduce :: Event -> State -> State
 reduce (Content source) app = app # presentation .~ load
     where load  = either (const Nothing) Just $ create source
 reduce Next app = app # _presentation <<< number +~ 1

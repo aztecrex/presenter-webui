@@ -1,4 +1,4 @@
-module Model.Presentation.New (
+module Model.Presentation (
   Presentation,
   create,
   content,

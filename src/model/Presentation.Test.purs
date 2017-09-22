@@ -17,7 +17,7 @@ import Test.Unit.Main (runTest)
 import Test.Unit.Assert (assert, equal)
 import Test.Unit.Console (TESTOUTPUT)
 
-import Model.Presentation.New (Presentation, content, create, number, size)
+import Model.Presentation (Presentation, content, create, number, size)
 
 tests :: ∀ fx. Eff ( console :: CONSOLE
                   , testOutput :: TESTOUTPUT
@@ -26,7 +26,7 @@ tests :: ∀ fx. Eff ( console :: CONSOLE
           ) Unit
 tests = do
   runTest do
-    suite "Model.NewPresentation" do
+    suite "ModelPresentation" do
       test "size" do
         let actual = testPres ^. size
         let expected = length testSlides
