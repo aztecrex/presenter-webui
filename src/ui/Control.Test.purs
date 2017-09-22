@@ -13,8 +13,8 @@ import Test.Unit.Console (TESTOUTPUT)
 import Test.Unit.Main (runTest)
 import Test.Unit.Assert (equal)
 import UI.Event (Event(..))
-import Model.Presentation.New (Presentation, create, number)
-import Model.App (App, _presentation, newApp, presentation)
+import Model.Presentation (Presentation, create, number)
+import Model.State (State, _presentation, newState, presentation)
 
 import UI.Control (reduce)
 
@@ -28,37 +28,37 @@ tests = do
     suite "UI.Control" do
         test "change slides" do
           let event = Content testSource
-          let initial = newApp # presentation .~ Just (makePres "# was")
+          let initial = newState # presentation .~ Just (makePres "# was")
           let actual = reduce event initial
-          let expected = newApp # presentation .~ Just testPres
+          let expected = newState # presentation .~ Just testPres
           equal expected actual
         test "install slides" do
           let event = Content testSource
-          let initial = newApp
+          let initial = newState
           let actual = reduce event initial
-          let expected = newApp # presentation .~ Just testPres
+          let expected = newState # presentation .~ Just testPres
           equal expected actual
         test "next" do
           let event = Next
-          let initial = testApp
+          let initial = testState
           let actual = reduce event initial
           let expected = initial # _presentation <<< number +~ 1
           equal expected actual
         test "previous" do
           let event = Previous
-          let initial = testApp # _presentation <<< number .~ 3
+          let initial = testState # _presentation <<< number .~ 3
           let actual = reduce event initial
           let expected = initial # _presentation <<< number -~ 1
           equal expected actual
         test "restart" do
           let event = Restart
-          let initial = testApp # _presentation <<< number .~ 3
+          let initial = testState # _presentation <<< number .~ 3
           let actual = reduce event initial
           let expected = initial # _presentation <<< number .~ 1
           equal expected actual
 
-testApp :: App
-testApp = newApp # presentation .~ Just testPres
+testState :: State
+testState = newState # presentation .~ Just testPres
 
 makePres :: String -> Presentation
 makePres src = unsafePartial $ fromRight $ create src

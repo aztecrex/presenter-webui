@@ -4,16 +4,16 @@ import Prelude (Unit, bind)
 import Control.Monad.Eff (Eff)
 import Pux (CoreEffects, EffModel, start)
 import Pux.Renderer.React (renderToDOM)
-import UI.View.New (view)
+import UI.View (view)
 import UI.Event (Event(..))
 import UI.Control (reduce)
-import Model.App (App, newApp)
+import Model.State (State, newState)
 
 
-initialState :: App
-initialState = reduce (Content slideSource) newApp
+initialState :: State
+initialState = reduce (Content slideSource) newState
 
-foldp :: ∀ fx. Event -> App -> EffModel App Event fx
+foldp :: ∀ fx. Event -> State -> EffModel State Event fx
 foldp ev s = { state: reduce ev s, effects: [] }
 
 main :: ∀ fx. Eff (CoreEffects fx) Unit
