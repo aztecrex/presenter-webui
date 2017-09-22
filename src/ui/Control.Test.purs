@@ -13,8 +13,8 @@ import Test.Unit.Console (TESTOUTPUT)
 import Test.Unit.Main (runTest)
 import Test.Unit.Assert (equal)
 import UI.Event (Event(..))
-import Model.Presentation.New (create, Presentation)
-import Model.App (newApp, presentation)
+import Model.Presentation.New
+import Model.App
 
 import UI.Control (reduce)
 
@@ -38,6 +38,15 @@ tests = do
           let actual = reduce event initial
           let expected = newApp # presentation .~ Just testPres
           equal expected actual
+        test "next" do
+          let event = Next
+          let initial = testApp
+          let actual = reduce event initial
+          let expected = initial # _presentation <<< number +~ 1
+          equal expected actual
+
+testApp :: App
+testApp = newApp # presentation .~ Just testPres
 
 makePres :: String -> Presentation
 makePres src = unsafePartial $ fromRight $ create src
