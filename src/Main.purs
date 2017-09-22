@@ -1,14 +1,13 @@
 module Main where
 
-import Prelude hiding (div)
+import Prelude (Unit, bind)
 import Control.Monad.Eff (Eff)
 import Pux (CoreEffects, EffModel, start)
 import Pux.Renderer.React (renderToDOM)
-import UI.View (view)
+import UI.View.New (view)
 import UI.Event (Event(..))
--- import UI.Control (reduce)
-import Model.Presentation as P
-import Model.State as S
+import UI.Control (reduce)
+import Model.App (App, newApp)
 
 slideSource :: String
 slideSource = """
@@ -34,21 +33,11 @@ Wasn't that just the greatest presentation?
 
 """
 
-type State = S.State
+initialState :: App
+initialState = reduce (Content slideSource) newApp
 
-initialState :: State
-initialState = { presentation: P.create slideSource } -- temporary
 
--- reduce :: Event -> State -> State
--- reduce Next s = s { presentation = P.next s.presentation }
--- reduce Previous s = s { presentation = P.previous s.presentation }
--- reduce Restart s = s { presentation = P.reset s.presentation }
--- reduce _ s = s
-
-reduce :: Event -> State -> State
-reduce _ = id
-
-foldp :: ∀ fx. Event -> State -> EffModel State Event fx
+foldp :: ∀ fx. Event -> App -> EffModel App Event fx
 foldp ev s = { state: reduce ev s, effects: [] }
 
 main :: ∀ fx. Eff (CoreEffects fx) Unit
