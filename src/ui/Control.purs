@@ -14,4 +14,5 @@ reduce :: Event -> App -> App
 reduce (Content source) app = app # presentation .~ load
     where load  = either (const Nothing) Just $ create source
 reduce Next app = app # _presentation <<< number +~ 1
+reduce Previous app = app # _presentation <<< number -~ 1
 reduce _ app = app

@@ -44,6 +44,12 @@ tests = do
           let actual = reduce event initial
           let expected = initial # _presentation <<< number +~ 1
           equal expected actual
+        test "previous" do
+          let event = Previous
+          let initial = testApp # _presentation <<< number .~ 3
+          let actual = reduce event initial
+          let expected = initial # _presentation <<< number -~ 1
+          equal expected actual
 
 testApp :: App
 testApp = newApp # presentation .~ Just testPres
