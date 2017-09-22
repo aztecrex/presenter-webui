@@ -32,6 +32,12 @@ tests = do
           let actual = reduce event initial
           let expected = newApp # presentation .~ Just testPres
           equal expected actual
+        test "install slides" do
+          let event = Content testSource
+          let initial = newApp
+          let actual = reduce event initial
+          let expected = newApp # presentation .~ Just testPres
+          equal expected actual
 
 makePres :: String -> Presentation
 makePres src = unsafePartial $ fromRight $ create src
