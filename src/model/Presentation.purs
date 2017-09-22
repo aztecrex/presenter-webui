@@ -6,7 +6,7 @@ module Model.Presentation.New (
   size
 ) where
 
-import Prelude (id, (#), ($), map, (+), clamp, (-), (<<<), compose, class Eq, class Show, show, (==), (&&), (<>))
+import Prelude (class Eq, class Show, clamp, compose, map, show, (#), ($), (&&), (+), (-), (<<<), (<>), (==))
 import Data.List (List(..), (:), length, (!!))
 import Data.Either (Either(..))
 import Data.Maybe (fromJust)
@@ -30,12 +30,12 @@ newtype Presentation = Pr PresentationR
 derive instance newtypePresentation :: Newtype Presentation _
 
 rShow :: PresentationR -> String
-rShow {_index, _content : (c :| cs)} = "{page: " <> show (_index + 1) <> ", content: " <> show (c :cs) <> "}"
+rShow {_index: i, _content : (c :| cs)} = "{page: " <> show (i + 1) <> ", content: " <> show (c :cs) <> "}"
 
 instance showPresentation :: Show Presentation where
   show (Pr r) = rShow r
 
-rEq :: forall r. PresentationR -> PresentationR -> Boolean
+rEq :: PresentationR -> PresentationR -> Boolean
 rEq a b = a._index == b._index && a._content == b._content
 
 instance eqPresentation :: Eq Presentation where

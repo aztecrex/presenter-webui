@@ -1,10 +1,10 @@
 module UI.Control.Test (tests) where
 
-import Prelude
+import Prelude (Unit, discard, (#), ($), (<<<))
 import Partial.Unsafe (unsafePartial)
-import Data.Either (either, fromRight)
+import Data.Either (fromRight)
 import Data.Maybe (Maybe(..))
-import Data.Lens
+import Data.Lens ((+~), (-~), (.~))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Aff.AVar (AVAR)
@@ -13,8 +13,8 @@ import Test.Unit.Console (TESTOUTPUT)
 import Test.Unit.Main (runTest)
 import Test.Unit.Assert (equal)
 import UI.Event (Event(..))
-import Model.Presentation.New
-import Model.App
+import Model.Presentation.New (Presentation, create, number)
+import Model.App (App, _presentation, newApp, presentation)
 
 import UI.Control (reduce)
 

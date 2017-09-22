@@ -2,10 +2,10 @@ module UI.Control (
   reduce
 ) where
 
-import Prelude
-import Data.Either
-import Data.Maybe
-import Data.Lens
+import Prelude (const, (#), ($), (<<<))
+import Data.Either (either)
+import Data.Maybe (Maybe(..))
+import Data.Lens ((+~), (-~), (.~))
 import Model.App (App, presentation, _presentation)
 import Model.Presentation.New (create, number)
 import UI.Event (Event(..))
