@@ -50,6 +50,12 @@ tests = do
           let actual = reduce event initial
           let expected = initial # _presentation <<< number -~ 1
           equal expected actual
+        test "restart" do
+          let event = Restart
+          let initial = testApp # _presentation <<< number .~ 3
+          let actual = reduce event initial
+          let expected = initial # _presentation <<< number .~ 1
+          equal expected actual
 
 testApp :: App
 testApp = newApp # presentation .~ Just testPres
