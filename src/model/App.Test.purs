@@ -1,22 +1,20 @@
 module Model.App.Test (tests) where
 
-import Prelude (Unit, ($), discard, (#))
+import Prelude (Unit, discard, (#), ($), (/=), (==))
 import Data.Either (fromRight)
 import Data.Maybe (Maybe(..))
 import Partial.Unsafe (unsafePartial)
-import Optic.Core
-import Model.Presentation as PO
+import Data.Lens ((.~), (^.), (^?))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Aff.AVar (AVAR)
 import Test.Unit (suite, test)
 import Test.Unit.Main (runTest)
-import Test.Unit.Assert (equal)
+import Test.Unit.Assert (assert, equal)
 import Test.Unit.Console (TESTOUTPUT)
-import Model.Presentation.New as P
+import Model.Presentation.New (create, Presentation)
 
-import Model.App as A
-import Model.State(initial, presentation)
+import Model.App (newApp, presentation, presentationError)
 
 tests :: ∀ fx. Eff ( console :: CONSOLE
                   , testOutput :: TESTOUTPUT
@@ -25,17 +23,27 @@ tests :: ∀ fx. Eff ( console :: CONSOLE
           ) Unit
 tests = do
   runTest do
-    -- suite "Model.App" do
-    --   test "assign presentation" do
-    --       let actual = A.create # A.presentation .~ testPres
-    --       equal (Just testPres) (actual ^. A.presentation)
-    suite "Model.State" do
-      test "initial presentation" do
-        equal 0 (PO.size $ presentation initial)
-        equal false (PO.presentable $ presentation initial)
+    suite "Model.App" do
+      test "no initial presentation" do
+        equal Nothing $ newApp ^. presentation
+      test "initial presentation error" do
+        equal (Just "uninitialized") $ newApp ^? presentationError
+      test "presentation" do
+        let actual = (newApp # presentation .~ testSource) ^. presentation
+        equal (Just testPres) actual
+      test "equality" do
+        let a = newApp # presentation .~ "# Slide"
+        let b = newApp # presentation .~ "# Slide"
+        let other = newApp # presentation .~ "not a slide"
+        assert "equal" $ a == b
+        assert "commute" $ b == a
+        assert "symmetry" $ a == a
+        assert "not equal" $ a /= newApp
+        assert "not equal" $ a /= other
 
--- testPres :: P.Presentation
--- testPres = unsafePartial $ fromRight $ P.create testSource
+
+testPres :: Presentation
+testPres = unsafePartial $ fromRight $ create testSource
 
 testSource :: String
 testSource = """

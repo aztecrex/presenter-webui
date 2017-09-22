@@ -1,6 +1,5 @@
 module Model.Presentation.New (
   Presentation,
-  PresentationError,
   create,
   content,
   number,
@@ -13,17 +12,13 @@ import Data.Either (Either(..))
 import Data.Maybe (fromJust)
 import Partial.Unsafe (unsafePartial)
 import Data.NonEmpty (NonEmpty, (:|), fromNonEmpty)
--- import Optic.Core
 import Data.Newtype (class Newtype, unwrap)
 import Data.Symbol (SProxy(..))
 import Data.Lens
 import Data.Lens.Record (prop)
--- import Data.Lens.Iso.Newtype
 import Text.Markdown.SlamDown (SlamDown)
 import Text.Markdown.SlamDown.Parser (parseMd)
 import Content.Slide (slides)
-
-type PresentationError = String
 
 type Content = SlamDown
 type ContentList = NonEmpty List Content
@@ -85,7 +80,7 @@ number = _record <<< _clampedIndex <<< _oneOff
 content :: forall s. Fold' s Presentation Content
 content = _record <<< _extract
 
-create :: String -> Either PresentationError Presentation
+create :: String -> Either String Presentation
 create source = case map slides $ parseMd source of
   Left _ -> Left "parse error"
   Right Nil -> Left "no content"
