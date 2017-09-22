@@ -2,21 +2,20 @@ module Model.App
 (
   App,
   presentation,
+  _presentation,
   newApp
 )
 where
 
-import Prelude
-import Data.Either (Either(..), either)
+import Prelude (class Eq, class Show, map, show, (<<<), (<>), (==))
 import Data.Maybe (Maybe(..), maybe)
-import Data.Profunctor (class Profunctor)
 import Data.Profunctor.Choice (class Choice)
 import Data.Profunctor.Strong (class Strong)
 import Data.Newtype (class Newtype, unwrap)
 import Data.Symbol (SProxy(..))
-import Data.Lens
+import Data.Lens (Iso', Lens', _Just, iso)
 import Data.Lens.Record (prop)
-import Model.Presentation.New
+import Model.Presentation.New (Presentation)
 
 type AppR = {
   _maybePresentation :: Maybe Presentation
@@ -47,6 +46,9 @@ _pres = prop (SProxy :: SProxy "_maybePresentation")
 -- presentation :: forall p. Strong p => Choice p => p Presentation Presentation -> p App App
 presentation :: Lens' App (Maybe Presentation)
 presentation = _record <<< _pres
+
+_presentation :: forall p. Strong p => Choice p => p Presentation Presentation -> p App App
+_presentation = presentation <<< _Just
 
 newApp :: App
 newApp = App { _maybePresentation: Nothing }

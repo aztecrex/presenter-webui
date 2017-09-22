@@ -1,10 +1,10 @@
 module Model.App.Test (tests) where
 
-import Prelude (Unit, discard, (#), ($), (/=), (==))
+import Prelude (Unit, discard, (#), ($), (/=), (==), (<<<))
 import Data.Either (fromRight)
 import Data.Maybe (Maybe(..))
 import Partial.Unsafe (unsafePartial)
-import Data.Lens ((.~), (^.))
+import Data.Lens ((.~), (^.), (+~))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Aff.AVar (AVAR)
@@ -12,9 +12,9 @@ import Test.Unit (suite, test)
 import Test.Unit.Main (runTest)
 import Test.Unit.Assert (assert, equal)
 import Test.Unit.Console (TESTOUTPUT)
-import Model.Presentation.New (create, Presentation)
+import Model.Presentation.New (create, number, Presentation)
 
-import Model.App (newApp, presentation)
+import Model.App (newApp, presentation, _presentation)
 
 tests :: ∀ fx. Eff ( console :: CONSOLE
                   , testOutput :: TESTOUTPUT
@@ -27,9 +27,14 @@ tests = do
       test "no initial presentation" do
         equal Nothing $ newApp ^. presentation
       test "presentation" do
-        let updated = newApp # presentation .~ Just testPres
-        let actual = updated ^. presentation
+        let app = newApp # presentation .~ Just testPres
+        let actual = app ^. presentation
         equal (Just testPres) actual
+      test "presentation just" do
+        let app = newApp # presentation .~ Just testPres
+        let update = app # _presentation <<< number +~ 1
+        let expected = testPres # number +~ 1
+        equal (Just expected) $ update ^. presentation
       test "equality" do
         let a = newApp # presentation .~ Just (makePres "# Slide")
         let b = newApp # presentation .~ Just (makePres "# Slide")
