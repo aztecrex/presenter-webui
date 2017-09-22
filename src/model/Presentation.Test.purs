@@ -1,9 +1,11 @@
 module Model.Presentation.Test (tests) where
 
-import Prelude (Unit, not, ($), id, map, const, discard)
-import Data.List (List(..), (!!))
-import Data.Either (either)
-import Data.Maybe (Maybe(..), isJust)
+import Prelude (Unit, discard, map, negate, (#), ($), (+), (-), (/=), (==))
+import Data.List (List, length, (!!))
+import Data.Either (fromRight)
+import Data.Maybe (fromJust)
+import Partial.Unsafe (unsafePartial)
+import Data.Lens ((+~), (-~), (.~), (^.))
 import Text.Markdown.SlamDown (SlamDown)
 import Text.Markdown.SlamDown.Parser (parseMd)
 import Content.Slide (slides)
@@ -15,7 +17,7 @@ import Test.Unit.Main (runTest)
 import Test.Unit.Assert (assert, equal)
 import Test.Unit.Console (TESTOUTPUT)
 
-import Model.Presentation(initial, create, presentable, size, slide, next, previous, reset)
+import Model.Presentation.New (Presentation, content, create, number, size)
 
 tests :: ∀ fx. Eff ( console :: CONSOLE
                   , testOutput :: TESTOUTPUT
@@ -24,68 +26,75 @@ tests :: ∀ fx. Eff ( console :: CONSOLE
           ) Unit
 tests = do
   runTest do
-    suite "Model.Presentation" do
-      test "initial presentation is not presentable" do
-        assert "should be not presentable" $ not $ presentable $ initial
-      test "create" do
-        let pres = create testSource
-        let actual = size pres
-        let expected = 3
+    suite "Model.NewPresentation" do
+      test "size" do
+        let actual = testPres ^. size
+        let expected = length testSlides
         equal expected actual
-      test "get slide not presentable" do
-        assert "no slide" $ not $ isJust (slide initial)
-      test "get presentable slide" do
-        let s = slide $ create testSource
-        let actualContent = map _.content s
-        let actualNumber = map _.number s
-        equal (testSlides !! 0) actualContent
-        equal (Just 1) actualNumber
-      test "next not presentable" do
-        assert "not presentable" $ not $ presentable $ next initial
-      test "previous not presentable" do
-        assert "not presentable" $ not $ presentable $ previous initial
-      test "reset not presentable" do
-        assert "not presentable" $ not $ presentable $ reset initial
-      test "next presentable" do
-        let pres = create testSource
-        let actual = slide $ next pres
-        let actualContent = map _.content actual
-        let actualNumber = map _.number actual
-        equal (testSlides !! 1) actualContent
-        equal (Just 2) actualNumber
-      test "previous presentable" do
-        let pres = create testSource
-        let actual = slide $ previous $ next $ next pres
-        let actualContent = map _.content actual
-        let actualNumber = map _.number actual
-        equal (testSlides !! 1) actualContent
-        equal (Just 2) actualNumber
-      test "reset presentable" do
-        let pres = create testSource
-        let actual = slide $ reset $ next $ next pres
-        let actualContent = map _.content actual
-        let actualNumber = map _.number actual
-        equal (testSlides !! 0) actualContent
-        equal (Just 1) actualNumber
-      test "lower clamp presentable" do
-        let pres = create testSource
-        let actual = slide $ previous pres
-        let actualContent = map _.content actual
-        let actualNumber = map _.number actual
-        equal (testSlides !! 0) actualContent
-        equal (Just 1) actualNumber
-      test "upper clamp presentable" do
-        let pres = create testSource
-        let actual = slide $ next $ next $ next $ next $ next pres
-        let actualContent = map _.content actual
-        let actualNumber = map _.number actual
-        equal (testSlides !! 2) actualContent
-        equal (Just 3) actualNumber
+      test "slide content" do
+        let actual = testPres ^. content
+        let expected = testSlide 0
+        equal expected actual
+      test "get slide number" do
+        let actual = testPres ^. number
+        equal 1 actual
+      test "change slide number" do
+        let n = 3
+        let updated = testPres # number .~ n
+        let actualContent = updated ^. content
+        let actualNumber = updated ^. number
+        let expectedContent = testSlide (n - 1)
+        equal expectedContent actualContent
+        equal n actualNumber
+      test "slide upper bound" do
+        let updated = testPres # number .~ 300
+        let actualContent = updated ^. content
+        let actualNumber = updated ^. number
+        let expectedContent = testSlide (length testSlides - 1)
+        let expectedNumber = length testSlides
+        equal expectedContent actualContent
+        equal expectedNumber actualNumber
+      test "slide lower bound" do
+        let updated = testPres # number .~ (-300)
+        let actualContent = updated ^. content
+        let actualNumber = updated ^. number
+        let expectedContent = testSlide 0
+        let expectedNumber = 1
+        equal expectedContent actualContent
+        equal expectedNumber actualNumber
+      test "relative slide change" do
+        let up = 2
+        let down = 1
+        let moved = (testPres # number +~ up) # number -~ down
+        equal (testSlide (up - down)) $ moved ^. content
+        equal (1 + up - down) $ moved ^. number
+      test "presentation equal" do
+         let src = "# Slide"
+         let a = unsafeCreatePres src
+         let b = unsafeCreatePres src
+         assert "they are equal" $ a == b
+         assert "commutative" $ b == a
+         assert "same" $ a == a
+      test "presentation nequal" do
+         let a = unsafeCreatePres "# Slide 1\n---\n# Slide 2"
+         let b = unsafeCreatePres "# Slide"
+         assert "they are noe equal" $ a /= b
+         assert "commutative" $ b /= a
 
 
+
+
+unsafeCreatePres :: String -> Presentation
+unsafeCreatePres src = unsafePartial $ fromRight $ create src
 
 testSlides :: List SlamDown
-testSlides = either (const Nil) id $ map slides $ parseMd testSource
+testSlides = unsafePartial fromRight $ map slides $ parseMd testSource
+
+testSlide :: Int -> SlamDown
+testSlide i = unsafePartial fromJust $ testSlides !! i
+
+testPres :: Presentation
+testPres = unsafeCreatePres testSource
 
 testSource :: String
 testSource = """

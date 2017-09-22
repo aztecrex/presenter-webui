@@ -4,3 +4,4 @@ data Event =  Next
             | Previous
             | Restart
             | Content String
+            | Noop
