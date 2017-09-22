@@ -9,6 +9,24 @@ import UI.Event (Event(..))
 import UI.Control (reduce)
 import Model.App (App, newApp)
 
+
+initialState :: App
+initialState = reduce (Content slideSource) newApp
+
+foldp :: ∀ fx. Event -> App -> EffModel App Event fx
+foldp ev s = { state: reduce ev s, effects: [] }
+
+main :: ∀ fx. Eff (CoreEffects fx) Unit
+main = do
+  app <- start
+    { initialState
+    , view
+    , foldp
+    , inputs: []
+    }
+  renderToDOM "#app" app.markup app.input
+
+
 slideSource :: String
 slideSource = """
 # Slide One
@@ -32,20 +50,3 @@ _Really_ weird.
 Wasn't that just the greatest presentation?
 
 """
-
-initialState :: App
-initialState = reduce (Content slideSource) newApp
-
-
-foldp :: ∀ fx. Event -> App -> EffModel App Event fx
-foldp ev s = { state: reduce ev s, effects: [] }
-
-main :: ∀ fx. Eff (CoreEffects fx) Unit
-main = do
-  app <- start
-    { initialState
-    , view
-    , foldp
-    , inputs: []
-    }
-  renderToDOM "#app" app.markup app.input
