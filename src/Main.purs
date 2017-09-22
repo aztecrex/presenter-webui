@@ -6,7 +6,7 @@ import Pux (CoreEffects, EffModel, start)
 import Pux.Renderer.React (renderToDOM)
 import UI.View (view)
 import UI.Event (Event(..))
-import UI.Control (reduce)
+-- import UI.Control (reduce)
 import Model.Presentation as P
 import Model.State as S
 
@@ -44,6 +44,9 @@ initialState = { presentation: P.create slideSource } -- temporary
 -- reduce Previous s = s { presentation = P.previous s.presentation }
 -- reduce Restart s = s { presentation = P.reset s.presentation }
 -- reduce _ s = s
+
+reduce :: Event -> State -> State
+reduce _ = id
 
 foldp :: ∀ fx. Event -> State -> EffModel State Event fx
 foldp ev s = { state: reduce ev s, effects: [] }
