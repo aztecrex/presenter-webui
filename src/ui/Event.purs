@@ -4,4 +4,5 @@ data Event =  Next
             | Previous
             | Restart
             | Content String
+            | RequestContent
             | Noop
