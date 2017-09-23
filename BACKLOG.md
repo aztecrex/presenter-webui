@@ -1,12 +1,12 @@
 # Current
 
-- ZFD
+- ~~ZFD~~
   - ~~provisioning commands (templates initially)~~
   - ~~automatically build and deploy website~~
 
-- show a presentation from Github coordinates
-  - use this project, file: `functional-and-serverless.present.md`
-  - horizontal rule == slide break
+- ~~show a presentation from Network coordinates~~
+  - ~~use this project, file: `functional-and-serverless.present.md`~~
+  - ~~horizontal rule == slide break~~
 
 - add presentation from coordinates
   - authenticated add
