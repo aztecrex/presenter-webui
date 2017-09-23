@@ -8,6 +8,10 @@
   - ~~use this project, file: `functional-and-serverless.present.md`~~
   - ~~horizontal rule == slide break~~
 
+- control via AWS IoT
+    - load slide deck
+    - operate forward, back, restart
+
 - add presentation from coordinates
   - authenticated add
   - synthesized URL and show after adding
