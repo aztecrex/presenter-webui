@@ -91,7 +91,10 @@ module.exports = {
 
   resolve: {
     modules: [ 'node_modules', '.psc-package' ],
-    extensions: [ '.purs', '.js']
+    // extensions: [ '.purs', '.js']
+    alias: {
+      config: path.resolve(__dirname, './')
+    }
   },
 
   plugins: [
