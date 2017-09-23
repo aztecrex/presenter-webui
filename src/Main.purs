@@ -1,6 +1,6 @@
 module Main where
 
-import Prelude (Unit, bind, ($), pure, discard, show)
+import Prelude (Unit, bind, ($), pure, discard, show, (<>))
 import Data.Maybe (Maybe(..))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
@@ -15,13 +15,19 @@ import UI.View (view)
 import UI.Event (Event(..))
 import UI.Control (reduce)
 import Model.State (State, newState)
-import AWS.Cognito (asyncLog)
+import AWS.Cognito (asyncLog, identityId)
 
 
 logEvent :: forall eff. Event -> Aff (console :: CONSOLE | eff) (Maybe Event)
 logEvent ev = do
   result <- asyncLog $ show ev
   liftEff $ log result
+  pure Nothing
+
+logIdentity :: forall eff. Aff (console :: CONSOLE | eff) (Maybe Event)
+logIdentity = do
+  idid <- identityId
+  liftEff $ log $ "cognito identity: " <> idid
   pure Nothing
 
 initialState :: State
@@ -36,7 +42,7 @@ foldp RequestContent s = { state: reduce RequestContent s,
     src <- getSource
     pure $ Just $ Content src
   ] }
-foldp ev s = { state: reduce ev s, effects: [logEvent ev] }
+foldp ev s = { state: reduce ev s, effects: [logIdentity] }
 
 main :: Eff (CoreEffects AppEffects) Unit
 main = do

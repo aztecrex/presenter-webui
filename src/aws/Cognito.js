@@ -1,5 +1,31 @@
 'use strict';
 
+const AWS = require('aws-sdk');
+const AWSConfig = require('config/aws-configuration.js')
+
+
+const config = AWS.config;
+config.region = AWSConfig.region;
+config.credentials = new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: AWSConfig.poolId
+});
+
+const credentials = config.credentials;
+exports._config_credentials_get = function (onError) {
+    return function (onSuccess) {
+        return function() {
+            credentials.get(function(error) {
+                if (error) {
+                    onError(error)();
+                    return;
+                }
+                onSuccess(credentials.identityId)();
+            });
+        };
+    };
+}
+
+
 exports._request = function (onError) {
     return function (onSuccess) {
         return function (message) {
@@ -7,10 +33,10 @@ exports._request = function (onError) {
                 return setTimeout (function () {
                     console.log("async: " + message);
                     onSuccess("message sent: " + message)();
-                }, 500)
-            }
-        }
-    }
+                }, 500);
+            };
+        };
+    };
 }
 
 // exports._request = function (msg)

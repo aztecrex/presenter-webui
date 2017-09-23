@@ -1,4 +1,4 @@
-module AWS.Cognito (asyncLog) where
+module AWS.Cognito (asyncLog, identityId) where
 
 import Prelude
 import Control.Monad.Eff (Eff)
@@ -11,7 +11,10 @@ foreign import _request :: forall eff. (Error -> Eff (console :: CONSOLE | eff) 
 asyncLog :: forall eff. String -> Aff (console :: CONSOLE | eff) String
 asyncLog message = makeAff (\error success -> _request error success message)
 
+foreign import _config_credentials_get :: forall eff. (Error -> Eff (console :: CONSOLE | eff) Unit) -> (String -> Eff (console :: CONSOLE | eff) Unit) -> Eff (console :: CONSOLE | eff) Unit
 
+identityId :: forall eff. Aff (console :: CONSOLE | eff) String
+identityId = makeAff _config_credentials_get
 
 -- ajaxGet' :: forall e. Request -> Aff e Response
 -- ajaxGet' req = makeAff (\error success -> ajaxGet success req)
