@@ -39,6 +39,7 @@
     "webpack-dev-server": "^2.4.5"
   },
   "dependencies": {
+    "aws-iot-device-sdk": "^2.0.1",
     "marked": "^0.3.6",
     "react": "^15.6.1",
     "react-dom": "^15.6.1"
