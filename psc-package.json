@@ -11,6 +11,7 @@
         "markdown",
         "profunctor-lenses",
         "affjax",
+        "aff",
         "argonaut"
     ]
 }
