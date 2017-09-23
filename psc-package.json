@@ -10,6 +10,7 @@
         "eff",
         "markdown",
         "profunctor-lenses",
-        "lens"
+        "affjax",
+        "argonaut"
     ]
 }

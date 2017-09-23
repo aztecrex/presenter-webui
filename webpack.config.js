@@ -82,6 +82,9 @@ module.exports = {
       },
       { test: /favicon.ico$/,
         loader: "file-loader?name=[path][name].[ext]&context=./src/public"
+      },
+      { test: /\.md$/,
+        loader: "file-loader?name=[path][name].[ext]&context=./src/public"
       }
     ]
   },
