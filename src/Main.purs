@@ -52,6 +52,10 @@ raw :: Update -> String
 raw (Update _ _ s) = s
 raw _ = "Not an update"
 
+updateToEvent :: Update -> Event
+updateToEvent (Update url page _) = RemoteControl url page
+updateToEvent _ = Noop
+
 main :: Eff (CoreEffects AppEffects) Unit
 main = do
   upds <- updates
@@ -61,7 +65,7 @@ main = do
     { initialState
     , view
     , foldp
-    , inputs: [ constant RequestContent, map (Log <<< raw) upds ]
+    , inputs: [ constant RequestContent, map (Log <<< raw) upds, map updateToEvent upds ]
     }
   renderToDOM "#app" app.markup app.input
 
