@@ -1,4 +1,4 @@
-module AWS.IoT where
+module AWS.IoT (Update(..), updates) where
 
 import Prelude
 import Control.Monad.Eff
@@ -12,52 +12,37 @@ import Signal.Time
 import AWS.Types (AWS, Credentials)
 import AWS
 
--- foreign import data Update :: Type
-foreign import _update :: forall eff.
+foreign import data ForeignUpdate :: Type
+foreign import _updates :: forall eff.
     Credentials
-    -> (String -> Eff (aws :: AWS | eff) Unit)
+    -> (ForeignUpdate -> Eff (aws :: AWS | eff) Unit)
     -> Eff (aws :: AWS | eff) Unit
 
-updates :: forall eff.
-    (String -> Eff (channel :: CHANNEL, aws :: AWS | eff) Unit)
-    -> Aff
-        ( channel :: CHANNEL, aws :: AWS
-        | eff
-        )
-        Unit
-updates dest = do
-    creds <- credentials
-    ch <- liftEff $ channel "init"
-    let sink = send ch
-    liftEff $ _update creds sink
-    liftEff $ runSignal $ subscribe ch ~> dest
-    -- pure unit
+foreign import _pageUpdate :: ForeignUpdate -> Int
+foreign import _urlUpdate :: ForeignUpdate -> String
+foreign import _rawUpdate :: ForeignUpdate -> String
 
-chupdates :: forall eff.
+data Update = Update String Int String | InitialUpdate
+
+fromForeignUpdate :: ForeignUpdate -> Update
+fromForeignUpdate fu = Update (_urlUpdate fu) (_pageUpdate fu) (_rawUpdate fu)
+
+fromUpdates :: forall eff.
+    Credentials
+    -> (Update -> Eff (aws :: AWS | eff) Unit)
+    -> Eff (aws :: AWS | eff) Unit
+fromUpdates credentials handle = _updates credentials (\fu -> handle (fromForeignUpdate fu))
+
+updates :: forall eff.
     Eff
         ( channel :: CHANNEL, aws :: AWS, exception :: EXCEPTION
         | eff
         )
-        (Signal String)
-chupdates = do
-    ch <- channel "init"
+        (Signal Update)
+updates = do
+    ch <- channel InitialUpdate
     let sink = send ch
     void $ launchAff $ do
         creds <- credentials
-        liftEff $ _update creds sink
+        liftEff $ fromUpdates creds sink
     pure $ subscribe ch
-
-
-foreign import times2 :: forall eff.  (String -> Eff eff Unit) -> Eff eff Unit
-updates2 :: forall eff.
-      Eff
-        ( channel :: CHANNEL, aws :: AWS
-        | eff
-        )
-        (Signal String)
-updates2 = do
-    ch <- channel "one"
-    let sink = send ch :: forall e. String -> Eff (channel :: CHANNEL | e) Unit
-    times2 sink
-    pure $ subscribe ch
-

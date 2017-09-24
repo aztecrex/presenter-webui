@@ -1,6 +1,6 @@
 module Main where
 
-import Prelude (Unit, bind, ($), pure, discard, show, (<>), void, map)
+import Prelude (Unit, bind, ($), pure, discard, show, (<>), void, map, (<<<))
 import Data.Maybe (Maybe(..))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
@@ -48,16 +48,20 @@ foldp RequestContent s = { state: reduce RequestContent s,
 foldp (Log msg) s = {state: s, effects: [logMessage msg]}
 foldp ev s = { state: reduce ev s, effects: [logCredentials] }
 
+raw :: Update -> String
+raw (Update _ _ s) = s
+raw _ = "Not an update"
+
 main :: Eff (CoreEffects AppEffects) Unit
 main = do
-  upds <- chupdates
+  upds <- updates
   -- runSignal $ upd ~> log
   -- void $ launchAff $ updates log
   app <- start
     { initialState
     , view
     , foldp
-    , inputs: [ constant RequestContent, map Log upds ]
+    , inputs: [ constant RequestContent, map (Log <<< raw) upds ]
     }
   renderToDOM "#app" app.markup app.input
 
