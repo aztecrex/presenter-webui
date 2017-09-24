@@ -16,4 +16,5 @@ reduce (Content source) app = app # presentation .~ load
 reduce Next app = app # _presentation <<< number +~ 1
 reduce Previous app = app # _presentation <<< number -~ 1
 reduce Restart app = app # _presentation <<< number .~ 1
+reduce (RemoteControl _ newNumber) app = app # _presentation <<< number .~ newNumber
 reduce _ app = app

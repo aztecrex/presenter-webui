@@ -56,6 +56,13 @@ tests = do
           let actual = reduce event initial
           let expected = initial # _presentation <<< number .~ 1
           equal expected actual
+        test "remote control" do
+          let n = 2
+          let event = RemoteControl "_" n
+          let initial = testState
+          let actual = reduce event initial
+          let expected = initial# _presentation <<< number .~ n
+          equal expected actual
 
 testState :: State
 testState = newState # presentation .~ Just testPres

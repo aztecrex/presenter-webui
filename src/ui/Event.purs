@@ -11,7 +11,7 @@ data Event =  Next
             | RequestContent
             | Noop
             | Log String
-
+            | RemoteControl String Int
 
 derive instance genericEvent :: Generic Event
 
