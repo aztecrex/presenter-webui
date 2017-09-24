@@ -46,7 +46,10 @@ const createDevice = function (credentials, cb) {
         cb("delta '" + name + "': " + JSON.stringify(stateObj));
     });
     shadow.on('status', function (name, type, token, stateObj) {
-        const prefix = `status ${name}, ${type}, ${token}: `
+        const prefix = "status " +
+              name + ", " +
+              type + ", " +
+              token + ": "
         cb(prefix + JSON.stringify(stateObj));
     });
 
