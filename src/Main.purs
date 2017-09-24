@@ -39,10 +39,10 @@ initialState = newState
 type AppEffects = (console :: CONSOLE, ajax :: AJAX, aws :: AWS, channel :: CHANNEL)
 
 foldp :: Event -> State -> EffModel State Event AppEffects
-foldp RequestContent s = { state: reduce RequestContent s,
+foldp ev@(RequestContent url) s = { state: reduce ev s,
   effects: [do
     liftEff $ log "content requested!!!"
-    src <- getSource
+    src <- getSource url
     pure $ Just $ Content src
   ] }
 foldp (Log msg) s = {state: s, effects: [logMessage msg]}
@@ -63,7 +63,10 @@ main = do
     { initialState
     , view
     , foldp
-    , inputs: [ constant RequestContent, map (Log <<< raw) upds, map updateToEvent upds ]
+    , inputs: [
+        constant (RequestContent "/functional-and-serverless.present.md"),
+        map (Log <<< raw) upds,
+        map updateToEvent upds ]
     }
   renderToDOM "#app" app.markup app.input
 

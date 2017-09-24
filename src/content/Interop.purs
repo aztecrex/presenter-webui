@@ -7,12 +7,13 @@ import Network.HTTP.Affjax (AJAX, get)
 
 
 getSource :: forall r.
-      Aff
+      String
+      -> Aff
         ( ajax :: AJAX
         | r
         )
         String
-getSource = do
-  res <- attempt $ get "/functional-and-serverless.present.md"
+getSource url = do
+  res <- attempt $ get url
   let decode r = r.response
   pure $ either show decode res

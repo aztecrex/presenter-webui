@@ -8,7 +8,7 @@ data Event =  Next
             | Previous
             | Restart
             | Content String
-            | RequestContent
+            | RequestContent String
             | Noop
             | Log String
             | RemoteControl String Int
