@@ -10,7 +10,7 @@ const clientId = function () {
 };
 
 const theTopic = "Banana";
-
+const defaultUrl = "https://raw.githubusercontent.com/aztecrex/presenter-webui/master/README.md";
 const createDevice = function (credentials, cb) {
     const thing = 'Slides';
     var registered = false
@@ -27,41 +27,63 @@ const createDevice = function (credentials, cb) {
     });
     shadow.on('connect', function () {
         shadow.subscribe(theTopic)
-        cb("connected, subscribed to '" + theTopic + "'");
+        console.log("connected, subscribed to '" + theTopic + "'");
         if (!registered) {
             shadow.register(thing, {
                 persistentSubscribe: true
             });
-            cb("registered thing '" + thing + "'");
+            console.log("registered thing '" + thing + "'");
             registered = true;
         }
     });
     shadow.on('reconnect', function () {
-        cb("reconnect")
+        console.log("reconnect")
     });
     shadow.on('message', function (topic, payload) {
-        cb("message on '" + topic + "': " + payload.toString())
+        console.log("message on '" + topic + "': " + payload.toString())
     });
     shadow.on('delta', function (name, stateObj) {
-        cb("delta '" + name + "': " + JSON.stringify(stateObj));
+        const page = stateObj.state.page || 1;
+        const url = stateObj.state.url || defaultUrl;
+        const update = {
+            page: page,
+            url: url
+        }
+        // console.log("DELTA: " + JSON.stringify(stateObj));
+        // console.log("DELTA UPDATE" + JSON.stringify(update));
+        cb({
+            update: update,
+            thing: name,
+            source: stateObj
+        });
     });
     shadow.on('status', function (name, type, token, stateObj) {
-        const prefix = "status " +
-              name + ", " +
-              type + ", " +
-              token + ": "
-        cb(prefix + JSON.stringify(stateObj));
+        const page = stateObj.state.delta.page || 1;
+        const url = stateObj.state.delta.url || defaultUrl;
+        const update = {
+            page: page,
+            url: url
+        }
+        // console.log("STATUS: " + JSON.stringify(stateObj));
+        // console.log("STATUS UPDATE" + JSON.stringify(update));
+        cb({
+            update: update,
+            thing: name,
+            token: token,
+            type: type,
+            source: stateObj
+        });
     });
 
     setTimeout( function () {
         const code = shadow.get(thing);
-        console.log("GET CODE:" + code);
+        // console.log("GET CODE:" + code);
     }, 3000);
 };
 
 const devices = [];
 
-exports._update = function (credentials) {
+exports._updates = function (credentials) {
     return function (onUpdate) {
         return function () {
             devices.push(createDevice(credentials, function (s) {
@@ -71,24 +93,13 @@ exports._update = function (credentials) {
     };
 };
 
-exports._source = function(send) {
-    return function () {
-        setInterval(function() {
-            const now = Date.now();
-            console.log ("sending: " + now);
-            send(now.toString())();
-        }, 4000.0);
-        return {};
-    };
+exports._pageUpdate = function (update) {
+    return update.update.page;
 };
-
-exports.times2 = function(send) {
-    return function () {
-        setInterval(function() {
-            const now = Date.now();
-            console.log ("sending: " + now);
-            send(now.toString())();
-        }, 4000.0);
-        return {};
-    };
+exports._urlUpdate = function (update) {
+    // console.log ("CONVERTING: " + JSON.stringify(update));
+    return update.update.url;
+};
+exports._rawUpdate = function (update) {
+    return JSON.stringify(update);
 };

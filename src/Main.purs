@@ -1,6 +1,6 @@
 module Main where
 
-import Prelude (Unit, bind, ($), pure, discard, show, (<>), void, map)
+import Prelude (Unit, bind, ($), pure, discard, show, (<>), void, map, (<<<))
 import Data.Maybe (Maybe(..))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
@@ -39,25 +39,38 @@ initialState = newState
 type AppEffects = (console :: CONSOLE, ajax :: AJAX, aws :: AWS, channel :: CHANNEL)
 
 foldp :: Event -> State -> EffModel State Event AppEffects
-foldp RequestContent s = { state: reduce RequestContent s,
+foldp ev@(RequestContent url) s = { state: reduce ev s,
   effects: [do
     liftEff $ log "content requested!!!"
-    src <- getSource
+    src <- getSource url
     pure $ Just $ Content src
   ] }
+foldp ev@(RemoteControl url _) s = {state: reduce ev s,
+  effects: [
+      pure $ Just $ RequestContent url
+  ] }
 foldp (Log msg) s = {state: s, effects: [logMessage msg]}
-foldp ev s = { state: reduce ev s, effects: [logCredentials] }
+foldp ev s = { state: reduce ev s, effects: [] }
+
+raw :: Update -> String
+raw (Update _ _ s) = s
+raw _ = "Not an update"
+
+updateToEvent :: Update -> Event
+updateToEvent (Update url page _) = RemoteControl url page
+updateToEvent _ = Noop
 
 main :: Eff (CoreEffects AppEffects) Unit
 main = do
-  upds <- chupdates
-  -- runSignal $ upd ~> log
-  -- void $ launchAff $ updates log
+  upds <- updates
   app <- start
     { initialState
     , view
     , foldp
-    , inputs: [ constant RequestContent, map Log upds ]
+    , inputs: [
+        constant (RequestContent "/functional-and-serverless.present.md"),
+        map (Log <<< raw) upds,
+        map updateToEvent upds ]
     }
   renderToDOM "#app" app.markup app.input
 
