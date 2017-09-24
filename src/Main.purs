@@ -44,8 +44,8 @@ foldp ev s = { state: reduce ev s, effects: [logCredentials] }
 
 main :: Eff (CoreEffects AppEffects) Unit
 main = do
-  upd <- updates2
-  runSignal $ upd ~> log
+  -- upd <- updates2
+  -- runSignal $ upd ~> log
   void $ launchAff $ updates log
   app <- start
     { initialState

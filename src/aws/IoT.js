@@ -9,22 +9,20 @@ const clientId = function () {
     return "device" + Math.floor(Math.random() * (max - min) + min);
 };
 
-
-
-
 const theTopic = "Banana";
 
 const createDevice = function (credentials, cb) {
+    console.log ("creds: " + JSON.stringify(credentials));
     const mqtt = IOT.device({
-        region: AWS.config.region,
-        host: AWSConfiguration.host,
+        region: AWSConfig.region,
+        host: AWSConfig.host,
         clientId: clientId(),
         protocol: 'wss',
         maximumReconnectTimeMs: 8000,
         debug: true,
-        accessKeyId: credentials.accessKeyId,
+        accessKeyId: credentials.AccessKeyId,
         secretKey: credentials.SecretKey,
-        sessionToken: crecentials.SessionToken
+        sessionToken: credentials.SessionToken
     });
     mqtt.on('connect', function () {
         mqtt.subscribe(theTopic)
@@ -34,7 +32,7 @@ const createDevice = function (credentials, cb) {
         cb("reconnect")
     });
     mqtt.on('message', function (topic, payload) {
-        cb("message on '" + topic + "': " + payload.toString)
+        cb("message on '" + topic + "': " + payload.toString())
     });
 };
 

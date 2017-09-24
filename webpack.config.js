@@ -97,6 +97,11 @@ module.exports = {
     }
   },
 
+  node: {
+    fs: 'empty',
+    tls: 'empty'
+  },
+
   plugins: [
     new webpack.LoaderOptionsPlugin({
       debug: true
