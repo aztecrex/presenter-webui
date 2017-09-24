@@ -15,34 +15,29 @@ import UI.View (view)
 import UI.Event (Event(..))
 import UI.Control (reduce)
 import Model.State (State, newState)
-import AWS.Cognito (asyncLog, identityId)
+import AWS
 
 
-logEvent :: forall eff. Event -> Aff (console :: CONSOLE | eff) (Maybe Event)
-logEvent ev = do
-  result <- asyncLog $ show ev
-  liftEff $ log result
-  pure Nothing
-
-logIdentity :: forall eff. Aff (console :: CONSOLE | eff) (Maybe Event)
-logIdentity = do
-  idid <- identityId
-  liftEff $ log $ "cognito identity: " <> idid
+logCredentials :: forall eff. Aff (aws :: AWS, console :: CONSOLE | eff) (Maybe Event)
+logCredentials = do
+  liftEff $ log "about to get credentials"
+  creds <- credentials
+  liftEff $ log $ "credentials: " <> show creds
   pure Nothing
 
 initialState :: State
 initialState = newState
 
-type AppEffects = (console :: CONSOLE, ajax :: AJAX)
+type AppEffects = (console :: CONSOLE, ajax :: AJAX, aws :: AWS)
 
-foldp :: ∀ fx. Event -> State -> EffModel State Event (console :: CONSOLE, ajax :: AJAX | fx)
+foldp :: Event -> State -> EffModel State Event AppEffects
 foldp RequestContent s = { state: reduce RequestContent s,
   effects: [do
     liftEff $ log "content requested!!!"
     src <- getSource
     pure $ Just $ Content src
   ] }
-foldp ev s = { state: reduce ev s, effects: [logIdentity] }
+foldp ev s = { state: reduce ev s, effects: [logCredentials] }
 
 main :: Eff (CoreEffects AppEffects) Unit
 main = do

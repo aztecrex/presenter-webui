@@ -25,7 +25,6 @@ exports._config_credentials_get = function (onError) {
     };
 }
 
-
 exports._request = function (onError) {
     return function (onSuccess) {
         return function (message) {
