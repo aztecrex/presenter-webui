@@ -50,7 +50,7 @@ foldp ev@(RemoteControl url _) s = {state: reduce ev s,
       pure $ Just $ RequestContent url
   ] }
 foldp (Log msg) s = {state: s, effects: [logMessage msg]}
-foldp ev s = { state: reduce ev s, effects: [logCredentials] }
+foldp ev s = { state: reduce ev s, effects: [] }
 
 raw :: Update -> String
 raw (Update _ _ s) = s
