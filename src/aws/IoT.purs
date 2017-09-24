@@ -2,6 +2,7 @@ module AWS.IoT where
 
 import Prelude
 import Control.Monad.Eff
+import Control.Monad.Eff.Exception
 import Control.Monad.Eff.Class
 import Control.Monad.Eff.Console
 import Control.Monad.Aff
@@ -32,9 +33,22 @@ updates dest = do
     liftEff $ runSignal $ subscribe ch ~> dest
     -- pure unit
 
+chupdates :: forall eff.
+    Eff
+        ( channel :: CHANNEL, aws :: AWS, exception :: EXCEPTION
+        | eff
+        )
+        (Signal String)
+chupdates = do
+    ch <- channel "init"
+    let sink = send ch
+    void $ launchAff $ do
+        creds <- credentials
+        liftEff $ _update creds sink
+    pure $ subscribe ch
+
 
 foreign import times2 :: forall eff.  (String -> Eff eff Unit) -> Eff eff Unit
-
 updates2 :: forall eff.
       Eff
         ( channel :: CHANNEL, aws :: AWS
