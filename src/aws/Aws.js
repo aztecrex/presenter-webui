@@ -62,5 +62,5 @@ exports._credentials = function (identity) {
 
 exports._showCredentials = function (credentials) {
     console.log("turning credentials into string");
-    return JSON.stringify (credentials);
+    return JSON.stringify ({AccessKeyId: credentials.AccessKeyId, SecretKey: "yeah, right"});
 }
