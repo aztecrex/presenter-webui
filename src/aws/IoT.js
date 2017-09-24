@@ -10,7 +10,7 @@ const clientId = function () {
 };
 
 const theTopic = "Banana";
-
+const defaultUrl = "https://raw.githubusercontent.com/aztecrex/presenter-webui/master/README.md";
 const createDevice = function (credentials, cb) {
     const thing = 'Slides';
     var registered = false
@@ -44,7 +44,7 @@ const createDevice = function (credentials, cb) {
     });
     shadow.on('delta', function (name, stateObj) {
         const page = stateObj.state.page || 1;
-        const url = stateObj.state.url || "http://www.whatever.net/wat";
+        const url = stateObj.state.url || defaultUrl;
         const update = {
             page: page,
             url: url
@@ -59,7 +59,7 @@ const createDevice = function (credentials, cb) {
     });
     shadow.on('status', function (name, type, token, stateObj) {
         const page = stateObj.state.delta.page || 1;
-        const url = stateObj.state.delta.url || "http://www.whatever.net/wat";
+        const url = stateObj.state.delta.url || defaultUrl;
         const update = {
             page: page,
             url: url

@@ -45,6 +45,10 @@ foldp ev@(RequestContent url) s = { state: reduce ev s,
     src <- getSource url
     pure $ Just $ Content src
   ] }
+foldp ev@(RemoteControl url _) s = {state: reduce ev s,
+  effects: [
+      pure $ Just $ RequestContent url
+  ] }
 foldp (Log msg) s = {state: s, effects: [logMessage msg]}
 foldp ev s = { state: reduce ev s, effects: [logCredentials] }
 
