@@ -1,6 +1,6 @@
 module Main where
 
-import Prelude (Unit, bind, ($), pure, discard, show, (<>), void)
+import Prelude (Unit, bind, ($), pure, discard, show, (<>), void, map)
 import Data.Maybe (Maybe(..))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
@@ -28,6 +28,11 @@ logCredentials = do
   liftEff $ log $ "credentials: " <> show creds
   pure Nothing
 
+logMessage :: forall eff. String -> Aff (aws :: AWS, console :: CONSOLE | eff) (Maybe Event)
+logMessage message = do
+  liftEff $ log $ "LOG: " <> message
+  pure Nothing
+
 initialState :: State
 initialState = newState
 
@@ -40,18 +45,19 @@ foldp RequestContent s = { state: reduce RequestContent s,
     src <- getSource
     pure $ Just $ Content src
   ] }
+foldp (Log msg) s = {state: s, effects: [logMessage msg]}
 foldp ev s = { state: reduce ev s, effects: [logCredentials] }
 
 main :: Eff (CoreEffects AppEffects) Unit
 main = do
-  upd <- chupdates
-  runSignal $ upd ~> log
+  upds <- chupdates
+  -- runSignal $ upd ~> log
   -- void $ launchAff $ updates log
   app <- start
     { initialState
     , view
     , foldp
-    , inputs: [ constant RequestContent ]
+    , inputs: [ constant RequestContent, map Log upds ]
     }
   renderToDOM "#app" app.markup app.input
 

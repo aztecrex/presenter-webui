@@ -10,6 +10,7 @@ data Event =  Next
             | Content String
             | RequestContent
             | Noop
+            | Log String
 
 
 derive instance genericEvent :: Generic Event
