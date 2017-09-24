@@ -12,8 +12,9 @@ const clientId = function () {
 const theTopic = "Banana";
 
 const createDevice = function (credentials, cb) {
-    console.log ("creds: " + JSON.stringify(credentials));
-    const mqtt = IOT.device({
+    const thing = 'Slides';
+    var registered = false
+    const shadow = IOT.thingShadow({
         region: AWSConfig.region,
         host: AWSConfig.host,
         clientId: clientId(),
@@ -24,16 +25,35 @@ const createDevice = function (credentials, cb) {
         secretKey: credentials.SecretKey,
         sessionToken: credentials.SessionToken
     });
-    mqtt.on('connect', function () {
-        mqtt.subscribe(theTopic)
+    shadow.on('connect', function () {
+        shadow.subscribe(theTopic)
         cb("connected, subscribed to '" + theTopic + "'");
+        if (!registered) {
+            shadow.register(thing, {
+                persistentSubscribe: true
+            });
+            cb("registered thing '" + thing + "'");
+            registered = true;
+        }
     });
-    mqtt.on('reconnect', function () {
+    shadow.on('reconnect', function () {
         cb("reconnect")
     });
-    mqtt.on('message', function (topic, payload) {
+    shadow.on('message', function (topic, payload) {
         cb("message on '" + topic + "': " + payload.toString())
     });
+    shadow.on('delta', function (name, stateObj) {
+        cb("delta '" + name + "': " + JSON.stringify(stateObj));
+    });
+    shadow.on('status', function (name, type, token, stateObj) {
+        const prefix = `status ${name}, ${type}, ${token}: `
+        cb(prefix + JSON.stringify(stateObj));
+    });
+
+    setTimeout( function () {
+        const code = shadow.get(thing);
+        console.log("GET CODE:" + code);
+    }, 3000);
 };
 
 const devices = [];
