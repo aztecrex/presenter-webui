@@ -1,11 +1,11 @@
-module AWS (AWS, anonymous, credentials, Credentials) where
+module AWS (anonymous, credentials) where
 
 import Prelude
 import Control.Monad.Eff(Eff, kind Effect)
 import Control.Monad.Eff.Exception (Error)
 import Control.Monad.Aff (makeAff, Aff)
+import AWS.Types (AWS, Credentials)
 
-foreign import data AWS :: Effect
 
 foreign import _anonymous :: forall eff. Eff (aws :: AWS | eff) Unit
 
@@ -16,13 +16,6 @@ foreign import _identity :: forall eff. (Error -> Eff (aws :: AWS | eff) Unit) -
 
 identity :: forall eff. Aff (aws :: AWS | eff) String
 identity = makeAff _identity
-
-foreign import data Credentials :: Type
-
-foreign import _showCredentials :: Credentials -> String
-
-instance showCredentials :: Show Credentials where
-  show = _showCredentials
 
 foreign import _credentials :: forall eff. String -> (Error -> Eff (aws :: AWS | eff) Unit) -> (Credentials -> Eff (aws :: AWS | eff) Unit) -> Eff (aws :: AWS | eff) Unit
 
