@@ -59,8 +59,6 @@ updateToEvent _ = Noop
 main :: Eff (CoreEffects AppEffects) Unit
 main = do
   upds <- updates
-  -- runSignal $ upd ~> log
-  -- void $ launchAff $ updates log
   app <- start
     { initialState
     , view
