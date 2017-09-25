@@ -14,16 +14,12 @@ import Content.Render(render)
 import UI.Event(Event(..))
 
 noslide :: HTML Event
-noslide = div $ p $ text "No slide."
-
-      -- <div class="navbar navbar-inverse">
-      --   <div class="container">
-      --     <a class="navbar-brand" href="/">Presentation</a>
-      --   </div>
-      -- </div>
-      -- <div class="container">
-      --   <div id="app"/ ></div>
-      -- </div>
+noslide = do
+    div ! className "navbar navbar-inverse" $ do
+      div ! className "container" $ do
+        a ! className "navbar-brand" ! href "/" $ text "Presentation"
+    div ! className "container" $ do
+      p $ text "Connecting....."
 
 
 

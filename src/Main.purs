@@ -70,7 +70,7 @@ main = do
     , view
     , foldp
     , inputs: [
-        constant (RequestContent "/functional-and-serverless.present.md"),
+        -- constant (RequestContent "/functional-and-serverless.present.md"),
         map (Log <<< raw) upds,
         map updateToEvent upds ]
     }
