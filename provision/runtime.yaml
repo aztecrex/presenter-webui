@@ -78,6 +78,8 @@ Resources:
               Forward: none
           ViewerProtocolPolicy: redirect-to-https
 
+  DataStore:
+    Type: AWS::S3::Bucket
 
   Domains:
     Type: AWS::Route53::RecordSetGroup
@@ -93,5 +95,7 @@ Resources:
 Outputs:
   ContentStore:
     Value: !Ref Origin
+  DataStore:
+    Value: !Ref DataStore
   Link:
     Value: !Sub http://${RelativeDomain}.${DNSZone}
