@@ -4,7 +4,7 @@ import Prelude (const, discard, show, ($), (<>))
 import Data.Maybe (maybe)
 import Text.Smolder.Markup (text, (#!), (!))
 import Text.Smolder.HTML (div, p, button, h3, a, span)
-import Text.Smolder.HTML.Attributes (href, className)
+import Text.Smolder.HTML.Attributes (href, className, style)
 import Pux.DOM.Events (onClick)
 import Pux.DOM.HTML (HTML)
 import Data.Lens ((^.))
@@ -28,7 +28,7 @@ slide pres = do
     div ! className "navbar navbar-inverse" $ do
       div ! className "container" $ do
         a ! className "navbar-brand" ! href "/" $ text "Presentation"
-        span ! className "navbar-brand" $ text $ show ( pres ^. number) <> "/" <> show (pres ^. size)
+        div ! className "navbar-brand" ! style "float: right;" $ text $ "Slide " <> show ( pres ^. number) <> "/" <> show (pres ^. size)
     div ! className "container" $ do
       render $ pres ^. content
 
