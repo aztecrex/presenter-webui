@@ -6,7 +6,7 @@ import Prelude (const, (#), ($), (<<<))
 import Data.Either (either)
 import Data.Maybe (Maybe(..))
 import Data.Lens ((+~), (-~), (.~))
-import Model.State (State, presentation, _presentation)
+import Model.State (State, presentation, _presentation, requestedLocation)
 import Model.Presentation (create, number)
 import UI.Event (Event(..))
 
@@ -16,5 +16,7 @@ reduce (Content source) app = app # presentation .~ load
 reduce Next app = app # _presentation <<< number +~ 1
 reduce Previous app = app # _presentation <<< number -~ 1
 reduce Restart app = app # _presentation <<< number .~ 1
-reduce (RemoteControl _ newNumber) app = app # _presentation <<< number .~ newNumber
+reduce (RemoteControl url newNumber) app = (updateLoc <<< updateNumber) app
+        where updateNumber s = s # _presentation <<< number .~ newNumber
+              updateLoc s = s # requestedLocation .~ url
 reduce _ app = app

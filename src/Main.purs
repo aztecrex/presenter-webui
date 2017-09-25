@@ -1,7 +1,8 @@
 module Main where
 
-import Prelude (Unit, bind, ($), pure, discard, show, (<>), void, map, (<<<))
+import Prelude (Unit, bind, ($), pure, discard, show, (<>), void, map, (<<<), (/=))
 import Data.Maybe (Maybe(..))
+import Data.Lens((^.))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE, log)
@@ -13,7 +14,7 @@ import Content.Interop (getSource)
 import UI.View (view)
 import UI.Event (Event(..))
 import UI.Control (reduce)
-import Model.State (State, newState)
+import Model.State (State, newState, requestedLocation)
 import Signal.Channel (CHANNEL)
 import Signal ((~>), runSignal, constant)
 import AWS.Types
@@ -46,8 +47,9 @@ foldp ev@(RequestContent url) s = { state: reduce ev s,
     pure $ Just $ Content src
   ] }
 foldp ev@(RemoteControl url _) s = {state: reduce ev s,
-  effects: [
-      pure $ Just $ RequestContent url
+  effects: [ if (url /= s ^. requestedLocation)
+      then pure $ Just $ RequestContent url
+      else pure Nothing
   ] }
 foldp (Log msg) s = {state: s, effects: [logMessage msg]}
 foldp ev s = { state: reduce ev s, effects: [] }

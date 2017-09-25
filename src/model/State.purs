@@ -3,6 +3,7 @@ module Model.State
   State,
   presentation,
   _presentation,
+  requestedLocation,
   newState
 )
 where
@@ -18,7 +19,8 @@ import Data.Lens.Record (prop)
 import Model.Presentation (Presentation)
 
 type StateR = {
-  _maybePresentation :: Maybe Presentation
+  _maybePresentation :: Maybe Presentation,
+  _requestedLocation :: String
 }
 newtype State = State StateR
 
@@ -43,12 +45,21 @@ _record = iso unwrap State
 _pres :: forall r. Lens' { _maybePresentation :: Maybe Presentation | r } (Maybe Presentation)
 _pres = prop (SProxy :: SProxy "_maybePresentation")
 
+_requestedLocation :: forall r. Lens' { _requestedLocation :: String | r } String
+_requestedLocation = prop (SProxy :: SProxy "_requestedLocation")
+
 presentation :: Lens' State (Maybe Presentation)
 presentation = _record <<< _pres
 
 _presentation :: forall p. Strong p => Choice p => p Presentation Presentation -> p State State
 _presentation = presentation <<< _Just
 
+requestedLocation :: Lens' State String
+requestedLocation = _record <<< _requestedLocation
+
 newState :: State
-newState = State { _maybePresentation: Nothing }
+newState = State {
+    _maybePresentation: Nothing,
+    _requestedLocation: ""
+  }
 
